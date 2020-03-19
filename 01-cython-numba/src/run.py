@@ -3,64 +3,108 @@ from timeit import timeit
 import pandas
 import pyximport
 
-pyximport.install()
+pyximport.install(language_level=3)
 
 import _python.mmul_trivial
 import _python.mmul_numpy
+import _python.mmul2_numpy
 import _cython.mmul_trivial
 import _cython.mmul_trivial_native
 import _cython.mmul_numpy
+import _cython.mmul2_numpy
 import _numba.mmul_numpy
 import _numba.mmul_numpy_fastmath_parallel
 import _numba.mmul_numpy_parallel
 import _numba.mmul_trivial
+import _numba.mmul_trivial_parallel
+import _numba.mmul_trivial_fastmath_parallel
+import _numba.mmul2_numpy
+import _numba.mmul2_numpy_fastmath_parallel
+import _numba.mmul2_numpy_parallel
 
 size = 1000
 testing_data = [
     {
         'name': 'Python',
-        'type': 'Trivial',
-        'exec': lambda: _python.mmul_trivial.run(size),
-    },
-    {
-        'name': 'Cython',
-        'type': 'Trivial',
-        'exec': lambda: _cython.mmul_trivial.run(size),
-    },
-    {
-        'name': 'Cython Native',
-        'type': 'Trivial',
-        'exec': lambda: _cython.mmul_trivial_native.run(size),
-    },
-    {
-        'name': 'Numba',
-        'type': 'Trivial',
-        'exec': lambda: _numba.mmul_trivial.run(size),
-    },
-    {
-        'name': 'Python',
-        'type': 'Numpy',
+        'type': 'Numpy vv',
         'exec': lambda: _python.mmul_numpy.run(size),
     },
     {
         'name': 'Cython',
-        'type': 'Numpy',
+        'type': 'Numpy vv',
         'exec': lambda: _cython.mmul_numpy.run(size),
     },
     {
         'name': 'Numba',
-        'type': 'Numpy',
+        'type': 'Numpy vv',
         'exec': lambda: _numba.mmul_numpy.run(size),
     },
     {
         'name': 'Numba Parallel',
-        'type': 'Numpy',
+        'type': 'Numpy vv',
         'exec': lambda: _numba.mmul_numpy_parallel.run(size),
     },
     {
         'name': 'Numba Fastmath Parallel',
-        'type': 'Numpy',
+        'type': 'Numpy vv',
         'exec': lambda: _numba.mmul_numpy_fastmath_parallel.run(size),
+    },
+
+    {
+        'name': 'Python',
+        'type': 'Trivial vv',
+        'exec': lambda: _python.mmul_trivial.run(size),
+    },
+    {
+        'name': 'Cython',
+        'type': 'Trivial vv',
+        'exec': lambda: _cython.mmul_trivial.run(size),
+    },
+    {
+        'name': 'Cython Native',
+        'type': 'Trivial vv',
+        'exec': lambda: _cython.mmul_trivial_native.run(size),
+    },
+    {
+        'name': 'Numba',
+        'type': 'Trivial vv',
+        'exec': lambda: _numba.mmul_trivial.run(size),
+    },
+    {
+        'name': 'Numba Parallel',
+        'type': 'Trivial vv',
+        'exec': lambda: _numba.mmul_trivial_parallel.run(size),
+    },
+    {
+        'name': 'Numba Fastmath Parallel',
+        'type': 'Trivial vv',
+        'exec': lambda: _numba.mmul_trivial_fastmath_parallel.run(size),
+    },
+
+    {
+        'name': 'Numba',
+        'type': 'Numpy mm',
+        'exec': lambda: _numba.mmul2_numpy.run(size),
+    },
+    {
+        'name': 'Numba Parallel',
+        'type': 'Numpy mm',
+        'exec': lambda: _numba.mmul2_numpy_parallel.run(size),
+    },
+    {
+        'name': 'Numba Fastmath Parallel',
+        'type': 'Numpy mm',
+        'exec': lambda: _numba.mmul2_numpy_fastmath_parallel.run(size),
+    },
+    {
+        'name': 'Cython',
+        'type': 'Numpy mm',
+        'exec': lambda: _cython.mmul2_numpy.run(size),
+    },
+    {
+        'name': 'Python',
+        'type': 'Numpy mm',
+        'exec': lambda: _python.mmul2_numpy.run(size),
     },
 ]
 
@@ -73,11 +117,13 @@ def main():
     results = pandas.DataFrame(columns=['type', 'name', 'time'])
     for td in testing_data:
         time = timeit(stmt=td['exec'], number=1000)
-        results = results.append({
+        row = {
             'name': td['name'],
             'type': td['type'],
             'time': time,
-        }, ignore_index=True)
+        }
+        results = results.append(row, ignore_index=True)
+        print(row)
 
     print(results)
 

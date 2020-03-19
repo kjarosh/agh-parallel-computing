@@ -6,8 +6,8 @@ def run(size):
     mx2 = [random.random() for _ in range(size)]
     result = [0] * size * size
 
-    for col in range(size):
-        for row in range(size):
+    for row in range(size):
+        for col in range(size):
             result[col + size * row] = mx1[col] * mx2[row]
 
     return result
