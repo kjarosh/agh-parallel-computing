@@ -1,0 +1,90 @@
+\section{Wstęp}
+
+Python jako język interpretowany na pierwszy rzut oka nie
+wydaje się odpowiedni dla dziedzin, w~których dużą rolę
+pełni wydajność.
+Jedną z~takich dziedzin jest High Performance Computing (HPC).
+Okazuje się jednak, że~mimo wad Pythona i~jego teoretycznej wydajności
+w porównaniu z językami kompilowanymi,
+wkładana jest duża ilość pracy w~próbę jego przyspieszenia
+oraz w rozwiązania pozwalające na uzyskanie wydajności porównywalnej
+z~innymi, bardziej niskopoziomowymi językami (typu C, C++).
+
+\subsection{Wady i zalety Pythona w HPC}
+
+Python jest językiem interpretowanym, co sprawia że
+jego wydajność jest bardzo niska w porównaniu z innymi językami.
+W~przypadku pisania kodu, który jest relatywnie często wykonywany,
+może to mieć bardzo duży wpływ na czas wykonania obliczeń.
+Mimo tego faktu, jest on niesamowicie popularny
+nie tylko w zastosowaniach czysto skryptowych ale również w bardziej
+wymagających dziedzinach, takich jak data science.
+Zajmuje trzecie miejsce wśród najpopularniejszych
+języków programowania~\cite{tiobe}.
+
+Wbrew pozorom, posiada on wiele funkcji i aspektów,
+które ułatwiają pisanie programów HPC~\cite{nih_python_in_hpc}.
+Jedną z większych i bardziej oczywistych zalet jest
+prostota i czytelność kodu.
+Próg wejścia jest relatywnie niski w porównaniu z innymi
+językami:
+Python używany jest często w dziedzinach nauki niezwiązanych
+z~informatyką przez ludzi, którzy nie specjalizują się
+w~programowaniu.
+Ma to duży wpływ na programy równoległe, które często
+wymagają użycia skomplikowanych konstrukcji językowych
+lub bibliotecznych.
+W Pythonie istnieje bardzo duży wachlarz możliwości wykorzystania
+konstrukcji językowych do poprawy zwięzłości pisanego kodu:
+możliwość nadpisania operatorów, użycie operatora slice,
+dekoratory funkcji, oraz wiele innych.
+Python też nie ogranicza użytkownika i~nie wymaga od niego
+pisania kodu w specyficzny sposób.
+Zależnie od problemu jaki jest rozwiązywany kod może
+być pisany obiektowo lub proceduralnie.
+Dla niektórych zagadnień (mając również na uwadze HPC) często kod proceduralny
+jest bardziej naturalnym wyborem, jednak nie znaczy to, że
+struktury danych lub inne części kodu nie mogą być pisane obiektowo.
+
+Kolejnym argumentem jest popularność i~wsparcie społeczności.
+Popularność Pythona jest wysoka i~ciągle rośnie,
+a~co za tym idzie powstaje bardzo dużo narzędzi i~rozwiązań,
+które są przeznaczone do wielu dziedzin --- w~tym HPC\@.
+Sprawia to też, że duży wysiłek jest wkładany
+w ulepszanie istniejących rozwiązań.
+Biblioteki takie jak NumPy, SciPy lub Matplotlib są
+jednymi z podstawowych bibliotek i~traktowane są jako
+podstawa wszelakich obliczeń i~wizualizacji.
+
+Sam fakt, że Python jest interpretowany nie musi
+też znaczyć, że wszystkie niskopoziomowe operacje
+muszą być w nim zaimplementowane.
+Rzeczy takie jak mnożenie macierzy, losowanie liczb,
+operacje na wielowymiarowych tablicach są implementowane
+w~bardziej niskopoziomowych i kompilowanych językach.
+Pozwala to na użycie Pythona do wysokopoziomowego opisu
+procedur i algorytmów, zostawiając najbardziej podatne
+na optymalizację fragmenty programu w językach bardziej
+wydajnych, z~którymi Python umożliwia integrację.
+Są to między innymi C/C++~\cite{python_c_cpp} lub
+Fortran~\cite{python_f2py}.
+
+Niestety jedną z poważniejszych wad jakie posiada Python
+to Global Interpreter Lock (GIL).
+Jest to mechanizm, który nie pozwala na współbieżne wykonanie
+kodu Pythona.
+Istnieje on głównie dlatego, że mechanizm zarządzania
+pamięcią CPythona nie ma zabezpieczeń w środowisku wielowątkowym.
+Przez istnienie GIL wiele funkcji zostało napisanych
+z myślą o nim, przez co zrównoleglanie ich
+i~używanie ich w programach równoległych
+jest niemożliwe~\cite{python_gil}.
+
+\subsection{Użycie Pythona w HPC}
+
+Dowodem przewagi zalet nad wadami jest popularność Pythona
+wśród organizacji i środowisk akademickich
+skupiających się na HPC\@, na przykład takich jak:
+NIH HPC Group~\cite{nih_hpc},
+HPC USC~\cite{hpc_usc}, lub
+HPC Center RTU~\cite{hpc_rtu}.
