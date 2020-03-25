@@ -12,6 +12,7 @@ import _numba.pi.seq
 import _numba.pi.seq_fastmath
 import _numba.pi.parallel
 import _numba.pi.parallel_fastmath
+import _numba.pi.multiprocessing
 import _python.pi.seq
 import _python.pi.mp
 import _cython.pi.seq
@@ -48,6 +49,11 @@ testing_data = [
         'name': 'Numba',
         'type': 'Parallel',
         'exec': lambda: _numba.pi.parallel.run(size),
+    },
+    {
+        'name': 'Numba',
+        'type': 'Multiprocessing',
+        'exec': lambda: _numba.pi.multiprocessing.run(size, pool),
     },
     {
         'name': 'Numba',
