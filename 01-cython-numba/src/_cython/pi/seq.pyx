@@ -1,7 +1,6 @@
 import random
 
-
-def run(points):
+cdef _run(points):
     circle_points = 0
     for _ in range(points):
         x = random.uniform(0, 1)
@@ -9,3 +8,6 @@ def run(points):
         if (x - 1) ** 2 + (y - 1) ** 2 < 1:
             circle_points += 1
     return 4 * circle_points / points
+
+def run(points):
+    return _run(points)

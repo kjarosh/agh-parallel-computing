@@ -8,10 +8,10 @@ pyximport.install(language_level=3)
 import _python.matrix.mmul_trivial
 import _python.matrix.mmul_numpy
 import _python.matrix.mmul2_numpy
-import _cython.mmul_trivial
-import _cython.mmul_trivial_native
-import _cython.mmul_numpy
-import _cython.mmul2_numpy
+import _cython.matrix.mmul_trivial
+import _cython.matrix.mmul_trivial_native
+import _cython.matrix.mmul_numpy
+import _cython.matrix.mmul2_numpy
 import _numba.matrix.mmul_numpy
 import _numba.matrix.mmul_numpy_fastmath_parallel
 import _numba.matrix.mmul_numpy_parallel
@@ -32,7 +32,7 @@ testing_data = [
     {
         'name': 'Cython',
         'type': 'Numpy vv',
-        'exec': lambda: _cython.mmul_numpy.run(size),
+        'exec': lambda: _cython.matrix.mmul_numpy.run(size),
     },
     {
         'name': 'Numba',
@@ -58,12 +58,12 @@ testing_data = [
     {
         'name': 'Cython',
         'type': 'Trivial vv',
-        'exec': lambda: _cython.mmul_trivial.run(size),
+        'exec': lambda: _cython.matrix.mmul_trivial.run(size),
     },
     {
         'name': 'Cython Native',
         'type': 'Trivial vv',
-        'exec': lambda: _cython.mmul_trivial_native.run(size),
+        'exec': lambda: _cython.matrix.mmul_trivial_native.run(size),
     },
     {
         'name': 'Numba',
@@ -99,7 +99,7 @@ testing_data = [
     {
         'name': 'Cython',
         'type': 'Numpy mm',
-        'exec': lambda: _cython.mmul2_numpy.run(size),
+        'exec': lambda: _cython.matrix.mmul2_numpy.run(size),
     },
     {
         'name': 'Python',
