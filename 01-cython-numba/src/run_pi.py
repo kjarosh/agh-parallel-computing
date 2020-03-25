@@ -4,6 +4,7 @@ from timeit import timeit
 import sys
 import pandas
 import pyximport
+import numba
 from matplotlib import pyplot as plt
 
 pyximport.install(language_level=3)
@@ -98,21 +99,7 @@ def test():
     return results
 
 
-def plot_results(results, sizes):
-    columns = ['{} {}'.format(value[0], value[1]) for value in results[0].values]
-    data = [[value[2] for value in result.values] for result in results]
-    df = pandas.DataFrame(data, index=sizes, columns=columns)
-    df.plot(colormap='jet', marker='.', markersize=10,
-            title='Computation time of Pi number depending on points number')
-    plt.xlabel("points number")
-    plt.ylabel("time [s]")
-    plt.yscale('log')
-    plt.show()
-
-
-def main():
-    plot = len(sys.argv) >= 2 and sys.argv[1] == 'plot'
-    sizes = [10000, 20000, 30000, 40000, 50000, 60000]
+def test_sizes(sizes, plot):
     results = []
     for i in sizes:
         global size
@@ -127,7 +114,48 @@ def main():
 
         results.append(r)
 
-    plot_results(results, sizes)
+    plot_results(results, sizes, 'Computation time of Pi number depending on points number', 'points', 'time [s]')
+
+
+def test_sizes_threads(sizes, threads, plot):
+    for i in sizes:
+        global size
+        size = i
+        results = []
+        for j in threads:
+            print("threads: ", j)
+            global processes
+            processes = j
+            numba.set_num_threads(min(j, numba.config.NUMBA_NUM_THREADS))
+            file_name = "result-{}-{}.dat".format(i, j)
+
+            if plot:
+                r = pandas.read_csv(file_name, sep="\t")
+            else:
+                r = test()
+                r.to_csv(file_name, sep="\t", index_label=False)
+            results.append(r)
+        plt_title = "Computation time of Pi number depending on threads number for {} points".format(i)
+        plot_results(results, threads, plt_title, 'threads', 'time [s]')
+
+
+def plot_results(results, index, title, xlabel, ylabel):
+    columns = ['{} {}'.format(value[0], value[1]) for value in results[0].values]
+    data = [[value[2] for value in result.values] for result in results]
+    df = pandas.DataFrame(data, index=index, columns=columns)
+    df.plot(colormap='jet', marker='.', markersize=10, title=title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.yscale('log')
+    plt.show()
+
+
+def main():
+    plot = len(sys.argv) >= 2 and sys.argv[1] == 'plot'
+    sizes = [100000, 200000, 300000, 400000, 500000, 600000]
+    threads = [1, 2, 4, 8, 16]
+    test_sizes(sizes, plot)
+    test_sizes_threads(sizes, threads, plot)
 
 
 if __name__ == '__main__':
