@@ -5,29 +5,29 @@ import pyximport
 
 pyximport.install(language_level=3)
 
-import _python.mmul_trivial
-import _python.mmul_numpy
-import _python.mmul2_numpy
+import _python.matrix.mmul_trivial
+import _python.matrix.mmul_numpy
+import _python.matrix.mmul2_numpy
 import _cython.mmul_trivial
 import _cython.mmul_trivial_native
 import _cython.mmul_numpy
 import _cython.mmul2_numpy
-import _numba.mmul_numpy
-import _numba.mmul_numpy_fastmath_parallel
-import _numba.mmul_numpy_parallel
-import _numba.mmul_trivial
-import _numba.mmul_trivial_parallel
-import _numba.mmul_trivial_fastmath_parallel
-import _numba.mmul2_numpy
-import _numba.mmul2_numpy_fastmath_parallel
-import _numba.mmul2_numpy_parallel
+import _numba.matrix.mmul_numpy
+import _numba.matrix.mmul_numpy_fastmath_parallel
+import _numba.matrix.mmul_numpy_parallel
+import _numba.matrix.mmul_trivial
+import _numba.matrix.mmul_trivial_parallel
+import _numba.matrix.mmul_trivial_fastmath_parallel
+import _numba.matrix.mmul2_numpy
+import _numba.matrix.mmul2_numpy_fastmath_parallel
+import _numba.matrix.mmul2_numpy_parallel
 
 size = 1000
 testing_data = [
     {
         'name': 'Python',
         'type': 'Numpy vv',
-        'exec': lambda: _python.mmul_numpy.run(size),
+        'exec': lambda: _python.matrix.mmul_numpy.run(size),
     },
     {
         'name': 'Cython',
@@ -37,23 +37,23 @@ testing_data = [
     {
         'name': 'Numba',
         'type': 'Numpy vv',
-        'exec': lambda: _numba.mmul_numpy.run(size),
+        'exec': lambda: _numba.matrix.mmul_numpy.run(size),
     },
     {
         'name': 'Numba Parallel',
         'type': 'Numpy vv',
-        'exec': lambda: _numba.mmul_numpy_parallel.run(size),
+        'exec': lambda: _numba.matrix.mmul_numpy_parallel.run(size),
     },
     {
         'name': 'Numba Fastmath Parallel',
         'type': 'Numpy vv',
-        'exec': lambda: _numba.mmul_numpy_fastmath_parallel.run(size),
+        'exec': lambda: _numba.matrix.mmul_numpy_fastmath_parallel.run(size),
     },
 
     {
         'name': 'Python',
         'type': 'Trivial vv',
-        'exec': lambda: _python.mmul_trivial.run(size),
+        'exec': lambda: _python.matrix.mmul_trivial.run(size),
     },
     {
         'name': 'Cython',
@@ -68,33 +68,33 @@ testing_data = [
     {
         'name': 'Numba',
         'type': 'Trivial vv',
-        'exec': lambda: _numba.mmul_trivial.run(size),
+        'exec': lambda: _numba.matrix.mmul_trivial.run(size),
     },
     {
         'name': 'Numba Parallel',
         'type': 'Trivial vv',
-        'exec': lambda: _numba.mmul_trivial_parallel.run(size),
+        'exec': lambda: _numba.matrix.mmul_trivial_parallel.run(size),
     },
     {
         'name': 'Numba Fastmath Parallel',
         'type': 'Trivial vv',
-        'exec': lambda: _numba.mmul_trivial_fastmath_parallel.run(size),
+        'exec': lambda: _numba.matrix.mmul_trivial_fastmath_parallel.run(size),
     },
 
     {
         'name': 'Numba',
         'type': 'Numpy mm',
-        'exec': lambda: _numba.mmul2_numpy.run(size),
+        'exec': lambda: _numba.matrix.mmul2_numpy.run(size),
     },
     {
         'name': 'Numba Parallel',
         'type': 'Numpy mm',
-        'exec': lambda: _numba.mmul2_numpy_parallel.run(size),
+        'exec': lambda: _numba.matrix.mmul2_numpy_parallel.run(size),
     },
     {
         'name': 'Numba Fastmath Parallel',
         'type': 'Numpy mm',
-        'exec': lambda: _numba.mmul2_numpy_fastmath_parallel.run(size),
+        'exec': lambda: _numba.matrix.mmul2_numpy_fastmath_parallel.run(size),
     },
     {
         'name': 'Cython',
@@ -104,7 +104,7 @@ testing_data = [
     {
         'name': 'Python',
         'type': 'Numpy mm',
-        'exec': lambda: _python.mmul2_numpy.run(size),
+        'exec': lambda: _python.matrix.mmul2_numpy.run(size),
     },
 ]
 

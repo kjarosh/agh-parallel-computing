@@ -5,6 +5,9 @@ LMK=latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error
 run:
 	$(VENV) cd src && python3.7 -m run
 
+run_pi:
+	$(VENV) cd src && python3.7 -m run_pi
+
 report:
 	cd report && $(LMK) -output-directory=../report-out index.tex
 
@@ -14,4 +17,4 @@ report_watch:
 clean:
 	cd report && $(LMK) -output-directory=../report-out index.tex -C
 
-.PHONY: run report report_watch clean
+.PHONY: run run_pi report report_watch clean
