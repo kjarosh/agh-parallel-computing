@@ -1,7 +1,19 @@
 \documentclass[twocolumn]{article}
 
+\usepackage[hidelinks]{hyperref}
 \usepackage[polish]{babel}
 \usepackage[backend=biber,style=numeric]{biblatex}
+\usepackage{listings}
+\usepackage{cleveref}
+
+\lstset{
+    captionpos=b,
+    frame=single,
+    language=Python,
+    basicstyle=\footnotesize\ttfamily,
+    float,
+    floatplacement=H,
+}
 
 \title{HPC w Pythonie: Cython i Numba -- porównanie}
 \author{Kamil Jarosz \and Wiktor Sus \and Michał Śledź}
