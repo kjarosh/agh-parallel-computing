@@ -1,90 +1,122 @@
 \section{Opis użytych narzędzi}
 
 Istnieje wiele narzędzi pozwalających na wykonywanie obliczeń w bardziej
-wydajny sposób w Pythonie.
+wydajny sposób w Pythonie~\cite{python_marowka}.
 Wybraliśmy dwa z nich: Cythona i Numbę.
 Nasza decyzja motywowana była popularnością pakietów,
 jak również znajomością języka C używanego w Cythonie
 i łatwością obsługi obu bibliotek.
 
+% @formatter:off
+\begin{lstlisting}[
+    caption=Przykład funkcji w Cythonie,
+    label={lst:cython_example}]
+import random
+
+cdef _run(points):
+    circle_points = 0
+    for _ in range(points):
+        x = random.uniform(0, 1)
+        y = random.uniform(0, 1)
+        if (x - 1) ** 2 + (y - 1) ** 2 < 1:
+            circle_points += 1
+    return 4 * circle_points / points
+
+def run(points):
+    return _run(points)
+\end{lstlisting}
+% @formatter:on
 
 \subsection{Cython}
 
-Cython jest nadzbiorem Pythona, który dodatkowo umożliwia wykorzystanie
-funkcji napisanych w języku C, jak również jego typów.
-To pozwala kompilatorowi na tworzenie bardzo wydajnego kodu w języku
-C ze źródłowego kodu Cythona.
-Jest on generowany raz, a następnie kompilowany przy użyciu wszystkich
-bardziej popularnych wersji kompilatora C/C++.
+Cython jest nadzbiorem Pythona, który dodatkowo umożliwia integrację
+z językiem C\@.
+Pozwala na użycie funkcji i typów z C jak i udostępnia
+możliwość operowania na obiektach z Pythona, w przypadku
+pisania kodu w C\@.
+Kompilator Cythona zamienia jego kod do postaci języka C,
+który później jest kompilowany i optymalizowany
+przez wybrany kompilator (na przykład gcc).
+Jest to robione raz --- przy pierwszym uruchomieniu,
+ewentualnie ręcznie na żądanie.
 
-Głównym zastosowaniem Cythona jest optymalizacja złożonych obliczeniowo
-fragmentów kodu poprzez kompilację ich do języka C lub w całości
-zastąpieniem natywnym kodem.
+Głównym zastosowaniem Cythona jest ogólne przyspieszenie programów
+poprzez skompilowanie ich do postaci kodu maszynowego.
+Następnie kod maszynowy jest wykonywany.
+Programista ma możliwość zastąpienia fragmentów kodu, które
+są najczęściej wykonywane na postaci bardziej optymalne,
+napisane w C\@.
+Możliwa jest też łatwa integracja z istniejącymi skompilowanymi
+bibliotekami.
+
+Możliwe jest również użycie kodu napisanego w Pythonie z języka C\@.
+Pozwala to na obustronną integrację tych języków.
 Niestety dodatkowe ograniczenia narzucane przez statyczne typowanie
-istotnie komplikują interakcję z bibliotekami napisanymi w Pythonie
-i często trzeba odpowiednio je integrować z kodem Cythona.
+istotnie komplikują interakcję z kodem napisanym w Pythonie
+i często trzeba odpowiednio je integrować.
 
-Za:
+Aby wykorzystać Cythona, należy w kodzie użyć konstrukcji \texttt{cdef}
+(\cref{lst:cython_example}).
+Oznacza ona daną funkcję, aby skompilowana została do postaci kodu C\@.
+
+Do niewątpliwych zalet Cythona należą:
 \begin{itemize}
     \item Łatwość użycia.
-    \item Wysoka wydajność.
-    \item Możliwość używania samych dekoratorów jak i pełnego wykorzystania
-    języka C\@.
+    \item Duża kontrola nad postacią kodu wyjściowego.
+    \item Swoboda w użyciu: automatyczne tłumaczenie Pythona na C,
+    używanie bezpośrednio funkcji z C w Pythonie, lub uruchamianie
+    kodu natywnego.
+    \item Możliwość automatycznej kompilacji kodu przy imporcie.
 \end{itemize}
-
-Przeciw:
-\begin{itemize}
-    \item Integracja kodu Cythona z Pythonowym może być istotnie utrudniona,
-    zwłaszcza podczas używania zewnętrznych bibliotek.
-    \item Wymaga zainstalowanego dodatkowo kompilatora C/C++.
-\end{itemize}
-
 
 \subsection{Numba}
 
-Numba --- JIT kompilator Pythona.
-Pozwala na optymalizację i kompilację  kodu Pythona do kodu maszynowego.
-
-Numba daje najlepsze wyniki przy zastosowaniu jej na zwykłych pętlach
-oraz kodzie napisanym przy użyciu NumPy’a.
-Nie wspiera Pandasa.
-Ma problemy ze zwykłymi funkcjami napisanymi w Pythonie, które nie są
-typowane statycznie (to jest do sprawdzenia jeszcze).
+Numba jest kompilatorem JIT Pythona~\cite{numba}.
+Pozwala na optymalizację i kompilację kodu Pythona do kodu maszynowego
+w trakcie jego wykonania z użyciem LLVM~\cite{llvm}.
+Jest zintegrowana z NumPy'em oraz z niektórymi funkcjami z biblioteki
+standardowej, odpowiednio je optymalizując.
 Dobrze współpracuje ze Sparkiem, Daskiem i Jupyterem.
 
-Numby używa się przez zastosowanie odpowiednich dekoratorów.
-Daje to dużą wygodę podczas implementacji.
-Podstawowe dekoratory:
-@jit - może pracować w trybie nopython lub object.
-Ustawienie parametru nopython na wartość True powoduje skompilowanie
-funkcji oznaczonej tym dekoratorem do kodu maszynowego - a co za tym idzie
-do jej wykonania nie będzie używany interpreter Pythona.
-W przypadku gdy Numba nie może skompilować kodu całej funkcji
-przechodzi do trybu object, w którym identyfikuje tylko pętle,
-które jest w stanie skompilować, i kompiluje je jako osobne funkcje
-do kodu maszynowego.
-Dla uzyskania największej wydajności należy używać trybu nopython.
-
-Dodatkowe parametry @jit:
+Numba jest bardzo łatwa w użyciu --- wystarczy użyć desygnowanych
+adnotacji.
+Funkcję nimi oznaczone będą uruchamiane za pomocą Numby.
 \begin{description}
+    \item[@jit]
+    Podstawowa adnotacja pozwalająca na użycie Numby.
+    Jej parametry opisane są niżej.
+    \item[@njit]
+    Równoważne z \texttt{@jit(nopython=True)}.
+    \item[@cfunc]
+    Powoduje, że oznaczoną funkcję można wywoływać z kodu napisanego w C/C++.
+\end{description}
+Dodatkowo adnotacja \texttt{@jit} posiada parametry:
+\begin{description}
+    \item [nopython]
+    Numba może pracować w trybie \textit{nopython} lub \textit{object}.
+    Ustawienie parametru \textit{nopython} na wartość \texttt{True}
+    powoduje skompilowanie
+    funkcji oznaczonej tym dekoratorem do kodu maszynowego, a co za tym idzie
+    do jej wykonania nie będzie używany interpreter Pythona.
+    W przypadku gdy Numba nie może skompilować kodu całej funkcji
+    przechodzi do trybu \textit{object}, w którym identyfikuje tylko pętle,
+    które jest w stanie skompilować, i kompiluje je jako osobne funkcje
+    do kodu maszynowego.
+    Dla uzyskania największej wydajności należy używać trybu \textit{nopython}.
     \item [parallel]
-    Ustawione na True powoduje, że Numba próbuje
+    Ustawione na \texttt{True} powoduje, że Numba próbuje
     zrównoleglić oznaczoną funkcję.
     Wraz z tym parametrem można używać funkcji \texttt{prange}
     zamiast \texttt{range}.
-    Wskazujemy wtedy explicite, że dana pętla ma być zrównoleglona.
+    Wskazujemy wtedy, że dana pętla ma być zrównoleglona.
     \item [fastmath]
-    Ustawione na True powoduje, że kosztem zgodności
+    Ustawione na \texttt{True} powoduje, że kosztem zgodności
     ze standardem IEEE 754 możemy uzyskać dodatkową wydajność.
     Jeżeli w środowisku, w którym wykonujemy program dostępna jest
     biblioteka SVLM to ustawienie tego parametru powoduje obniżenie
     dokładności obliczeń zwiększając ich wydajność.
-    \item [@njit]
-    Alias na \texttt{@jit(nopython=True)}.
-    \item [@cfunc]
-    Powoduje, że oznaczoną funkcję można wywoływać z kodu napisanego w C/C++.
 \end{description}
 
 Numby można również używać z powodzeniem do programowania GPU,
-zarówno Nvidia CUDA jak i AMD ROC (to drugie eksperymentalnie),
-natomiast programowanie GPU nie było tematem naszej pracy.
+zarówno Nvidia CUDA jak i AMD ROC (eksperymentalnie),
+natomiast samo programowanie GPU nie było tematem naszej pracy.
