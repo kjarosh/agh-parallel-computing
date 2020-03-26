@@ -1,5 +1,31 @@
 \section{Cython}
 
-\subsection{Przybliżanie liczby pi}
+\subsection{Przybliżanie liczby $\pi$}
 
-\subsection{Mnożenie wektorów}
+
+
+\begin{figure*}
+    \centering
+    \begin{minipage}[b]{.45\textwidth}
+        \centering
+        \input{tikz/speedup-cython.tikz}
+        \caption{Przyspieszenie liczenia liczby $\pi$ w Cythonie}
+        \label{fig:cython-speedup}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{.45\textwidth}
+        \centering
+        \input{tikz/threads-cython.tikz}
+        \caption{Czas wykonania algorytmu w Cythonie w zależności od liczby wątków}
+        \label{fig:cython-threads}
+    \end{minipage}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \input{tikz/sizes-cython.tikz}
+    \caption{Czas wykonania algorytmu w Cythonie w zależności od rozmiaru problemu}
+    \label{fig:cython-sizes}
+\end{figure*}
+
+%\subsection{Mnożenie wektorów}

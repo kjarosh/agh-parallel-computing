@@ -37,7 +37,6 @@ testing_data = [
         'name': 'Python',
         'type': 'Seq',
         'exec': lambda: _python.pi.seq.run(size),
-        'filter': lambda s: s <= 100000,
     },
     {
         'name': 'Python',
@@ -70,7 +69,6 @@ testing_data = [
         'name': 'Cython',
         'type': 'Seq',
         'exec': lambda: _cython.pi.seq.run(size),
-        'filter': lambda s: s <= 100000,
     },
     {
         'name': 'Cython',

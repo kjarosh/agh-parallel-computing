@@ -1,0 +1,12 @@
+\begin{tikzpicture}[trim axis left]
+    \begin{loglogaxis}[
+        xlabel=Rozmiar problemu,
+        ylabel=Czas wykonania,
+        legend pos=outer north east]
+        \addplot table[x index=1, y index=0] {results/sizes-seq_cython.dat};
+        \addplot table[x index=1, y index=0] {results/sizes-seq_native_cython.dat};
+        \addplot table[x index=1, y index=0] {results/sizes-seq_numba.dat};
+        \addplot table[x index=1, y index=0] {results/sizes-seq_python.dat};
+        \legend{Cython, Cython Native, Numba, Python, MP Python}
+    \end{loglogaxis}
+\end{tikzpicture}

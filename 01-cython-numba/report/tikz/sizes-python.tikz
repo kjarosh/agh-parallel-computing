@@ -1,0 +1,11 @@
+\begin{tikzpicture}[trim axis left]
+    \begin{axis}[
+        xlabel=Rozmiar problemu,
+        ylabel=Czas wykonania,
+        legend pos=outer north east]
+        \addplot table[mark=x, x index=1, y index=0] {results/sizes-seq_python.dat};
+        \addplot table[mark=*, x index=1, y index=0] {results/sizes-mp_python.dat};
+
+        \legend{Python, MP Python}
+    \end{axis}
+\end{tikzpicture}
