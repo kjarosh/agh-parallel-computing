@@ -14,6 +14,8 @@ import _numba.pi.seq
 import _numba.pi.seq_fastmath
 import _numba.pi.parallel
 import _numba.pi.parallel_fastmath
+import _numba.pi.mp
+import _numba.pi.mp_fastmath
 import _python.pi.seq
 import _python.pi.mp
 import _cython.pi.seq
@@ -64,7 +66,16 @@ testing_data = [
         'type': 'Parallel Fastmath',
         'exec': lambda: _numba.pi.parallel_fastmath.run(size),
     },
-
+    {
+        'name': 'Numba',
+        'type': 'MP',
+        'exec': lambda: _numba.pi.mp.run(size, pool),
+    },
+    {
+        'name': 'Numba',
+        'type': 'MP Fastmath',
+        'exec': lambda: _numba.pi.mp_fastmath.run(size, pool),
+    },
     {
         'name': 'Cython',
         'type': 'Seq',
