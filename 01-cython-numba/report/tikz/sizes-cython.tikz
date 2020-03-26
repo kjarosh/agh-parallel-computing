@@ -1,0 +1,13 @@
+\begin{tikzpicture}[trim axis left]
+    \begin{axis}[
+        xlabel=Rozmiar problemu,
+        ylabel=Czas wykonania,
+        legend pos=outer north east]
+        \addplot table[mark=x, x index=1, y index=0] {results/sizes-seq_cython.dat};
+        \addplot table[mark=o, x index=1, y index=0] {results/sizes-seq_native_cython.dat};
+        \addplot table[mark=*, x index=1, y index=0] {results/sizes-mp_cython.dat};
+        \addplot table[mark=., x index=1, y index=0] {results/sizes-mp_native_cython.dat};
+
+        \legend{Cython, Cython Native, MP Cython, MP Cython Native}
+    \end{axis}
+\end{tikzpicture}

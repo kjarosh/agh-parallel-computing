@@ -1,0 +1,12 @@
+\begin{tikzpicture}[trim axis left]
+    \begin{axis}[
+        xlabel=Liczba wątków,
+        ylabel=Przyspieszenie,
+        legend pos=north west]
+        \addplot table[color=red, mark=x, x index=1, y index=2] {results/threads-mp_python.dat};
+
+        \addplot[domain=0:9, samples=2, color=gray, style=dashed]{x};
+
+        \legend{MP Python}
+    \end{axis}
+\end{tikzpicture}

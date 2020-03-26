@@ -1,0 +1,13 @@
+\begin{tikzpicture}[trim axis left]
+    \begin{axis}[
+        xlabel=Liczba wątków,
+        ylabel=Czas wykonania,
+        legend pos=north east]
+        \addplot table[color=red, mark=x, x index=1, y index=0] {results/threads-mp_cython.dat};
+        \addplot table[color=blue, mark=o, x index=1, y index=0] {results/threads-mp_native_cython.dat};
+        \addplot table[color=red, mark=x, x index=1, y index=0] {results/threads-parallel_numba.dat};
+        \addplot table[color=blue, mark=o, x index=1, y index=0] {results/threads-parallel_fastmath_numba.dat};
+        \addplot table[color=red, mark=x, x index=1, y index=0] {results/threads-mp_python.dat};
+        \legend{Cython, Cython Native, Numba, Numba Fastmath, MP Python}
+    \end{axis}
+\end{tikzpicture}
