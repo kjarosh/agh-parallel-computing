@@ -33,10 +33,14 @@ liczby wątków musieliśmy skorzystać z wersji, która jest jeszcze w fazie te
     \label{fig:numba-parallel-sizes}
 \end{figure*}
 
-Wykres ~\ref{fig:numba-threads} przedstawia zależność czasu rozwiązania problemu od ilości wykorzystywanych
-wątków. Możęmy zaobserwować, że wraz ze zwiększaniem liczby wątków istotnie maleje czas
-wykonania programu. Program skaluje się bardzo dobrze dla 2, 3 i 4 wątków natomiast
-dokładanie kolejnych tj. 5, 6, 7, 8 nie daje już aż tak dobrego rezultatu. Widać to dokładnie
+Wykres ~\ref{fig:numba-threads} przedstawia zależność czasu rozwiązania problemu
+od ilości wykorzystywanych
+wątków.
+Możemy zaobserwować, że wraz ze zwiększaniem liczby wątków istotnie maleje czas
+wykonania programu.
+Program skaluje się bardzo dobrze dla 2, 3 i 4 wątków natomiast
+dokładanie kolejnych tj. 5, 6, 7, 8 nie daje już aż tak dobrego rezultatu.
+Widać to dokładnie
 na wykresie ~\ref{fig:numba-speedup} gdzie począwszy od 5 wątków realne przyspieszenie
 programu zdecydowanie odbiega od teoretycznego.
 
