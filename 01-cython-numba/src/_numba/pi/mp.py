@@ -4,7 +4,11 @@ from numba import njit
 
 
 def run(points, pool) -> float:
-    return pool.apply(worker, (points,))
+    processes = pool._processes
+
+    data = [points // processes for _ in range(processes)]
+    circle_points = sum(pool.map(worker, data))
+    return 4 * circle_points / points
 
 @njit
 def worker(points) -> float:

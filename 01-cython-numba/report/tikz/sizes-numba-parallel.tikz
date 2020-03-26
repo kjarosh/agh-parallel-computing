@@ -3,9 +3,11 @@
         xlabel=Rozmiar problemu,
         ylabel=Czas wykonania (s),
         legend pos=north west]
-        \addplot table[mark=*, x index=1, y index=0] {results/sizes-parallel_numba.dat};
-        \addplot table[mark=., x index=1, y index=0] {results/sizes-parallel_fastmath_numba.dat};
+        \addplot table[x index=1, y index=0] {results/sizes-parallel_numba.dat};
+        \addplot table[x index=1, y index=0] {results/sizes-parallel_fastmath_numba.dat};
+        \addplot table[x index=1, y index=0] {results/sizes-mp_numba.dat};
+        \addplot table[x index=1, y index=0] {results/sizes-mp_fastmath_numba.dat};
 
-        \legend{Parallel Numba, Parallel Numba Fastmath}
+        \legend{Parallel Numba, Parallel Numba Fastmath, MP Numba, MP Numba Fastmath}
     \end{axis}
 \end{tikzpicture}
