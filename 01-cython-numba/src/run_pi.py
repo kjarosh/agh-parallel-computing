@@ -1,10 +1,10 @@
+import sys
 from multiprocessing.pool import Pool
 from timeit import timeit
 
-import sys
+import numba
 import pandas
 import pyximport
-import numba
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
@@ -19,10 +19,19 @@ import _python.pi.mp
 import _cython.pi.seq
 import _cython.pi.seq_native
 import _cython.pi.mp
+import _cython.pi.mp_native
 
+iterations = 100
 size = 1000
-processes = 8
-pool = Pool(processes=processes)
+pool = Pool(processes=8)
+
+
+def set_processes(pc):
+    global pool
+    pool = Pool(processes=pc)
+    numba.set_num_threads(min(pc, numba.config.NUMBA_NUM_THREADS))
+
+
 testing_data = [
     {
         'name': 'Python',
@@ -73,6 +82,11 @@ testing_data = [
         'type': 'MP',
         'exec': lambda: _cython.pi.mp.run(size, pool),
     },
+    {
+        'name': 'Cython',
+        'type': 'MP Native',
+        'exec': lambda: _cython.pi.mp_native.run(size, pool),
+    },
 ]
 
 pandas.set_option('display.max_rows', 500)
@@ -80,14 +94,17 @@ pandas.set_option('display.max_columns', 500)
 pandas.set_option('display.width', 1000)
 
 
-def test():
+def test(parallel_only=False):
     print("size:", size)
     results = DataFrame(columns=['type', 'name', 'time'])
     for td in testing_data:
+        if parallel_only and 'Seq' in td['type']:
+            continue
+
         if 'filter' in td and not td['filter'](size):
             time = None
         else:
-            time = timeit(stmt=td['exec'], number=1000)
+            time = timeit(stmt=td['exec'], number=iterations)
 
         row = {
             'name': td['name'],
@@ -114,6 +131,7 @@ def test_sizes(sizes, plot):
             r['size'] = i
             results = pandas.concat([results, r], ignore_index=True)
 
+        results['kind'] = results['type'].astype(str) + ' ' + results['name']
         results.to_csv(file_name, sep="\t", index=False)
 
     plot_results(results, 'size', 'Computation time of Pi number depending on points number', 'size', 'time [s]')
@@ -121,7 +139,9 @@ def test_sizes(sizes, plot):
 
 def test_threads(threads, plot):
     global size
-    size = 60000
+    size = 1_000_000
+    global iterations
+    iterations = 50
     file_name = "result-threads.dat"
 
     if plot:
@@ -130,12 +150,20 @@ def test_threads(threads, plot):
         results = DataFrame(columns=['type', 'name', 'time', 'threads'])
         for j in threads:
             print("threads:", j)
-            global processes
-            processes = j
-            numba.set_num_threads(min(j, numba.config.NUMBA_NUM_THREADS))
-            r = test()
+            set_processes(j)
+            r = test(True)
             r['threads'] = j
             results = pandas.concat([results, r], ignore_index=True)
+
+        results['kind'] = results['type'].astype(str) + ' ' + results['name']
+
+        # speedup
+        seq_times = results[results['threads'] == 1]
+        seq_times['base_time'] = seq_times['time']
+        seq_times = seq_times.filter(['kind', 'base_time'])
+        results = results.merge(seq_times, on='kind')
+        results['speedup'] = results['base_time'].astype(float) / \
+                             results['time'].astype(float)
 
         results.to_csv(file_name, sep="\t", index=False)
 
@@ -144,20 +172,18 @@ def test_threads(threads, plot):
 
 
 def plot_results(results, index, title, xlabel, ylabel):
-    results['kind'] = results['type'].astype(str) + ' ' + results['name']
-    results.set_index(index, inplace=True)
+    results.set_index(index)
     results.groupby('kind')['time'].plot(legend=True, title=title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.yscale('log')
     plt.show()
 
 
 def main():
     plot = len(sys.argv) >= 2 and sys.argv[1] == 'plot'
-    sizes = [10000, 20000, 30000, 40000, 50000, 60000]
-    threads = [1, 2, 3, 4, 5, 6, 7, 8]
+    sizes = [100000, 200000, 300000, 400000, 500000, 600000]
     test_sizes(sizes, plot)
+    threads = [1, 2, 3, 4, 5, 6, 7, 8]
     test_threads(threads, plot)
 
 
