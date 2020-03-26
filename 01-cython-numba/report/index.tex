@@ -30,34 +30,16 @@
     \input{02-description-of-tools}
     \input{03-description-of-benchmarks}
     \input{04-cython}
-
+    \input{05-numba}
 
 
 
     \begin{figure*}
         \centering
-        \begin{minipage}[b]{.45\textwidth}
-            \centering
-            \input{tikz/speedup-numba.tikz}
-            \caption{Przyspieszenie liczenia liczby $\pi$ w Numbie}
-            \label{fig:numba-speedup}
-        \end{minipage}
-        \hfill
-        \begin{minipage}[b]{.45\textwidth}
-            \centering
-            \input{tikz/threads-numba.tikz}
-            \caption{Czas wykonania algorytmu w Numbie w zależności od liczby wątków}
-            \label{fig:numba-threads}
-        \end{minipage}
+        \input{tikz/sizes-numba-seq.tikz}
+        \caption{Czas sekwencyjnego wykonania algorytmu w Numbie w zależności od rozmiaru problemu}
+        \label{fig:numba-seq-sizes}
     \end{figure*}
-
-    \begin{figure*}
-        \centering
-        \input{tikz/sizes-numba.tikz}
-        \caption{Czas wykonania algorytmu w Numbie w zależności od rozmiaru problemu}
-        \label{fig:numba-sizes}
-    \end{figure*}
-
 
     \begin{figure*}
         \centering
