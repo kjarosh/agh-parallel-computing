@@ -1,0 +1,52 @@
+\section{Numba}
+Obliczenia przeprowadzane w Numbie oprócz podziału na algorytm sekwencyjny i równoległy
+zostały również podzielone na te z włączoną i wyłączoną  opcją `Fastmath`.
+Rozmiar problemu dla algorytmu równoległego był równy 1000000 tzn., że do obliczenia
+liczby Pi losowaliśmy 1000000 punktów.
+Ze względu na to, że żadna stabilna wersja Numby nie umożliwiała ręcznego ustawienia
+liczby wątków musieliśmy skorzystać z wersji, która jest jeszcze w fazie testów.
+
+
+\subsection{Przybliżanie liczby pi}
+
+\begin{figure*}
+    \centering
+    \begin{minipage}[b]{.45\textwidth}
+        \centering
+        \input{tikz/speedup-numba.tikz}
+        \caption{Przyspieszenie liczenia liczby $\pi$ w Numbie}
+        \label{fig:numba-speedup}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{.45\textwidth}
+        \centering
+        \input{tikz/threads-numba.tikz}
+        \caption{Czas wykonania algorytmu w Numbie w zależności od liczby wątków}
+        \label{fig:numba-threads}
+    \end{minipage}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \input{tikz/sizes-numba-parallel.tikz}
+    \caption{Czas równoległego wykonania algorytmu w Numbie w zależności od rozmiaru problemu}
+    \label{fig:numba-parallel-sizes}
+\end{figure*}
+
+Wykres ~\ref{fig:numba-threads} przedstawia zależność czasu rozwiązania problemu od ilości wykorzystywanych
+wątków. Możęmy zaobserwować, że wraz ze zwiększaniem liczby wątków istotnie maleje czas
+wykonania programu. Program skaluje się bardzo dobrze dla 2, 3 i 4 wątków natomiast
+dokładanie kolejnych tj. 5, 6, 7, 8 nie daje już aż tak dobrego rezultatu. Widać to dokładnie
+na wykresie ~\ref{fig:numba-speedup} gdzie począwszy od 5 wątków realne przyspieszenie
+programu zdecydowanie odbiega od teoretycznego.
+
+%Ostatni wykres ~\ref{fig:numba-parallel-sizes}) przedstawia czas równoległego wykonania
+%programu w Numbie w zależności od rozmiaru problemu. Wyniki są zgodne z oczekiwanymi.
+%Dla problemu o małym rozmiarze (liczba losowanych punktów = 100000) algorytm sekwencyjny
+%jest szybszy od algorytmu równoległego, natomiast już od rozmiaru równego
+%200000 sytuacja się odwraca. Dla obu opcji zostały również wykonane pomiary z opcją
+%fastmath, która minimalnie przyspiesza działanie programów.
+
+
+
+%\subsection{Mnożenie wektorów}
