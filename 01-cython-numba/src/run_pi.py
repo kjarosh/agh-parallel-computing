@@ -63,6 +63,11 @@ testing_data = [
     },
     {
         'name': 'Numba',
+        'type': 'Parallel Fastmath',
+        'exec': lambda: _numba.pi.parallel_fastmath.run(size),
+    },
+    {
+        'name': 'Numba',
         'type': 'MP',
         'exec': lambda: _numba.pi.mp.run(size, pool),
     },
@@ -71,12 +76,6 @@ testing_data = [
         'type': 'MP Fastmath',
         'exec': lambda: _numba.pi.mp_fastmath.run(size, pool),
     },
-    {
-        'name': 'Numba',
-        'type': 'Parallel Fastmath',
-        'exec': lambda: _numba.pi.parallel_fastmath.run(size),
-    },
-
     {
         'name': 'Cython',
         'type': 'Seq',
