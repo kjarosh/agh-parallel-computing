@@ -2,30 +2,75 @@
 
 \subsection{Przybliżanie liczby $\pi$}
 
-
-
-\begin{figure*}
-    \centering
-    \begin{minipage}[b]{.45\textwidth}
-        \centering
-        \input{tikz/speedup-cython.tikz}
-        \caption{Przyspieszenie liczenia liczby $\pi$ w Cythonie}
-        \label{fig:cython-speedup}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{.45\textwidth}
-        \centering
-        \input{tikz/threads-cython.tikz}
-        \caption{Czas wykonania algorytmu w Cythonie w zależności od liczby wątków}
-        \label{fig:cython-threads}
-    \end{minipage}
-\end{figure*}
-
 \begin{figure*}
     \centering
     \input{tikz/sizes-cython.tikz}
     \caption{Czas wykonania algorytmu w Cythonie w zależności od rozmiaru problemu}
     \label{fig:cython-sizes}
 \end{figure*}
+
+Dla Cythona wybraliśmy głównie dwa warianty:
+\begin{itemize}
+    \item kod napisany w Pythonie kompilowany do C automatycznie, oraz
+    \item kod napisany w C, zintegrowany z Pythonem.
+\end{itemize}
+Pierwszy wariant oznaczany jest jako ``Cython'', drugi jako ``Cython Native''.
+Dodatkowo zbadaliśmy wpływ użycia biblioteki \textit{multiprocessing}
+na oba warianty.
+
+Na rysunku~\ref{fig:cython-sizes} przedstawiony jest wykres czasu wykonania
+algorytmu, w zależności od rozmiaru problemu.
+Warianty z użyciem \textit{multiprocessing} były uruchamiane na
+8 wątkach.
+Niestety wariant natywny napisany w C jest średnio 20 razy szybszy,
+mimo faktu, że oba warianty są kompilowane.
+Różnica ta jest spowodowana głównie przez dwie rzeczy:
+\begin{itemize}
+    \item kod kompilowany przez Cythona ma dosyć istotny narzut związany z
+    używaniem Pythonowych obiektów i funkcji,
+    \item duży wpływ na czas wykonania programu w algorytmach Monte Carlo
+    ma użyty generator liczb pseudolosowych, okazuje się
+    bowiem że generator z Pythona jest nieco wolniejszy od
+    generatora z biblioteki standardowej C\@.
+\end{itemize}
+Zauważyć można, że mimo uruchomienia programu na 8 wątkach,
+natywny kod sekwencyjny nadal jest szybszy od kodu skompilowanego przez
+Cythona.
+
+Wyżej omówione wyniki ukazują jak ważny jest dobór odpowiednich narzędzi
+--- zarówno sposobu napisania kodu jak i rzeczy takich jak generator
+liczb pseudolosowych.
+
+\begin{figure*}
+    \centering
+    \begin{minipage}[b]{.45\textwidth}
+        \centering
+        \input{tikz/threads-cython.tikz}
+        \caption{Czas wykonania algorytmu w Cythonie w zależności od liczby wątków}
+        \label{fig:cython-threads}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{.45\textwidth}
+        \centering
+        \input{tikz/speedup-cython.tikz}
+        \caption{Przyspieszenie liczenia liczby $\pi$ w Cythonie}
+        \label{fig:cython-speedup}
+    \end{minipage}
+\end{figure*}
+
+Na rysunku~\ref{fig:cython-threads} przedstawiony jest czas wykonania
+w zależności od liczby wątków.
+Testy zostały wykonane dla wystarczająco dużego rozmiaru problemu,
+który był równy \texttt{1\_000\_000} punktów.
+Natywny Cython jest szybszy 18--21 krotnie.
+
+Na rysunku~\ref{fig:cython-speedup} widoczne jest również przyspieszenie
+obu wariantów kodu.
+W zależności od liczby wątków (1--8) przedstawiamy współczynnik
+przyspieszenia programu.
+Dla obu przypadków widać, że przyspieszenie rośnie niemalże liniowo.
+Dla wersji natywnej jest trochę mniejsze, lecz najpewniej wynika to z faktu,
+że czas wykonania części równoległej się drastycznie zmniejszył,
+przez co bardziej uwidocznił część sekwencyjną.
 
 %\subsection{Mnożenie wektorów}
