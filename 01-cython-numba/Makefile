@@ -8,6 +8,9 @@ run:
 run_pi:
 	$(VENV) cd src && python3.7 -m run_pi
 
+run_pi_plot:
+	$(VENV) cd src && python3.7 -m run_pi plot
+
 report:
 	cd report && $(LMK) -output-directory=../report-out index.tex
 
