@@ -32,6 +32,7 @@
     \input{08-environment}
     \input{04-cython}
     \input{05-numba}
+    \input{06-seq_numba-python}
     \input{07-summary}
 
 
@@ -47,24 +48,31 @@
         \centering
         \begin{minipage}[b]{.45\textwidth}
             \centering
-            \input{tikz/speedup-python.tikz}
-            \caption{Przyspieszenie liczenia liczby $\pi$ w czystym Pythonie}
-            \label{fig:python-speedup}
+            \input{tikz/speedup-all.tikz}
+            \caption{Przyspieszenie liczenia liczby $\pi$}
+            \label{fig:all-speedup}
         \end{minipage}
         \hfill
         \begin{minipage}[b]{.45\textwidth}
             \centering
-            \input{tikz/threads-python.tikz}
-            \caption{Czas wykonania algorytmu w czystym Pythonie w zależności od liczby wątków}
-            \label{fig:python-threads}
+            \input{tikz/threads-all.tikz}
+            \caption{Czas wykonania algorytmu w zależności od liczby wątków}
+            \label{fig:all-threads}
         \end{minipage}
     \end{figure*}
 
     \begin{figure*}
         \centering
-        \input{tikz/sizes-python.tikz}
-        \caption{Czas wykonania algorytmu w czystym Pythonie w zależności od rozmiaru problemu}
-        \label{fig:python-sizes}
+        \input{tikz/sizes-seq.tikz}
+        \caption{Czas wykonania algorytmu w zależności od rozmiaru problemu}
+        \label{fig:all-sizes-seq}
+    \end{figure*}
+
+    \begin{figure*}
+        \centering
+        \input{tikz/sizes-parallel.tikz}
+        \caption{Czas wykonania algorytmu w zależności od rozmiaru problemu}
+        \label{fig:all-sizes-parallel}
     \end{figure*}
 
     \printbibliography
