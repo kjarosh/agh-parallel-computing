@@ -3,10 +3,10 @@ VENV := test -f ../venv/bin/activate && . ../venv/bin/activate;
 LMK=latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error
 
 run:
-	$(VENV) cd src && python3.7 -m run
+	$(VENV) cd src && python3 -m run
 
 run_pi:
-	$(VENV) cd src && python3.7 -m run_pi
+	$(VENV) cd src && python3 -m run_pi
 
 run_pi_plot:
 	$(VENV) cd src && python3.7 -m run_pi plot
