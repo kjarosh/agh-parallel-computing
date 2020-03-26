@@ -31,6 +31,7 @@
     \input{03-description-of-benchmarks}
     \input{04-cython}
     \input{05-numba}
+    \input{07-summary}
 
 
 
@@ -64,39 +65,6 @@
         \caption{Czas wykonania algorytmu w czystym Pythonie w zależności od rozmiaru problemu}
         \label{fig:python-sizes}
     \end{figure*}
-
-
-    \begin{figure*}
-        \centering
-        \begin{minipage}[b]{.45\textwidth}
-            \centering
-            \input{tikz/speedup-all.tikz}
-            \caption{Przyspieszenie liczenia liczby $\pi$}
-            \label{fig:all-speedup}
-        \end{minipage}
-        \hfill
-        \begin{minipage}[b]{.45\textwidth}
-            \centering
-            \input{tikz/threads-all.tikz}
-            \caption{Czas wykonania algorytmu w zależności od liczby wątków}
-            \label{fig:all-threads}
-        \end{minipage}
-    \end{figure*}
-
-    \begin{figure*}
-        \centering
-        \input{tikz/sizes-seq.tikz}
-        \caption{Czas wykonania algorytmu w zależności od rozmiaru problemu}
-        \label{fig:all-sizes-seq}
-    \end{figure*}
-
-    \begin{figure*}
-        \centering
-        \input{tikz/sizes-parallel.tikz}
-        \caption{Czas wykonania algorytmu w zależności od rozmiaru problemu}
-        \label{fig:all-sizes-parallel}
-    \end{figure*}
-
 
     \printbibliography
 \end{document}
