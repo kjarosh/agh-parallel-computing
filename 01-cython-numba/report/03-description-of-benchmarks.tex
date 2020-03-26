@@ -1,0 +1,27 @@
+\section{Opis benchmarków}
+
+\subsection{Przybliżanie liczby pi}
+
+Pierwszym benchmarkiem jest przybliżanie liczby pi za pomocą
+algorytmu Monte Carlo.
+Losujemy zadaną liczbę punktów z kwadratu jednostkowego
+i obliczamy jaka część należy do ćwiartki koła.
+Algorytm ten jest bardzo łatwy w zrównolegleniu
+i pozwala na dobrą reprezentację wyników.
+
+Wadą tego algorytmu jest natomiast ekstensywne wykorzystywanie
+generatora liczb pseudolosowych.
+W naszym przypadku, gdy korzystamy z wielu narzędzi, może
+to oznaczać duże wahania w wynikach w zależności od użytego narzędzia.
+Jak się później okaże, różne generatory mogą dawać istotnie różne wyniki,
+czasem sięgające dwóch rzędów wielkości.
+Problem ten ukazał się już po wykonaniu eksperymentów,
+podczas interpretacji wyników.
+
+\subsection{Mnożenie wektorów}
+
+Kolejnym benchmarkiem jest mnożenie dwóch wektorów o rozmiarach
+$n$ tak, aby otrzymać macierz rozmiaru $n\times n$.
+Wybraliśmy taki test głównie po to, aby porównać wydajność
+z biblioteką NumPy bez niepotrzebnej implementacji skomplikowanych
+algorytmów.
