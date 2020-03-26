@@ -73,4 +73,72 @@ Dla wersji natywnej jest trochę mniejsze, lecz najpewniej wynika to z faktu,
 że czas wykonania części równoległej się drastycznie zmniejszył,
 przez co bardziej uwidocznił część sekwencyjną.
 
+Na listingu~\ref{lst:cython-seq} widoczny jest użyty kod w wariancie
+sekwencyjnym.
+Jest tam użyta konstrukcja \texttt{cdef}, która pozwala
+oznaczyć funkcję aby została skompilowana przez Cythona.
+Na listingu~\ref{lst:cython-native-seq} jest widoczny kod
+natywny.
+Zdefiniowany jest tam mapping między funkcjami w C a w Pythonie.
+Listing zawiera również implementację algorytmu w kodzie C\@.
+
+% @formatter:off
+\begin{lstlisting}[
+    caption=Kod sekwencyjny w Cythonie,
+    label={lst:cython-seq}]
+import random
+
+cdef _run(points):
+    circle_points = 0
+    for _ in range(points):
+        x = random.uniform(0, 1)
+        y = random.uniform(0, 1)
+        if (x - 1) ** 2 + (y - 1) ** 2 < 1:
+            circle_points += 1
+    return 4 * circle_points / points
+
+def run(points):
+    return _run(points)
+
+\end{lstlisting}
+% @formatter:on
+
+% @formatter:off
+\begin{lstlisting}[
+    caption=Kod sekwencyjny w natywnym Cythonie,
+    label={lst:cython-native-seq}]
+cdef extern from *:
+    """
+    static double _run(int points) {
+        int circle_points = 0;
+
+        for (int i = 0; i < points; ++i) {
+            double x = (double) rand()
+                    / RAND_MAX;
+            double y = (double) rand()
+                    / RAND_MAX;
+
+            if ((x - 1) * (x - 1) +
+                (y - 1) * (y - 1) < 1) {
+                ++circle_points;
+            }
+        }
+
+        return 4.d * circle_points / points;
+    }
+
+    static void _srand(void) {
+        srand(time(NULL));
+    }
+    """
+    double _run(int points)
+    void _srand()
+
+def run(points):
+    return _run(points)
+
+_srand()
+\end{lstlisting}
+% @formatter:on
+
 %\subsection{Mnożenie wektorów}
