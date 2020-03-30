@@ -82,6 +82,7 @@ Zdefiniowany jest tam mapping między funkcjami w C a w Pythonie.
 Listing zawiera również implementację algorytmu w kodzie C\@.
 
 % @formatter:off
+\noindent\begin{minipage}{\columnwidth}
 \begin{lstlisting}[
     caption=Kod sekwencyjny w Cythonie,
     label={lst:cython-seq}]
@@ -98,11 +99,12 @@ cdef _run(points):
 
 def run(points):
     return _run(points)
-
 \end{lstlisting}
+\end{minipage}
 % @formatter:on
 
 % @formatter:off
+\noindent\begin{minipage}{\columnwidth}
 \begin{lstlisting}[
     caption=Kod sekwencyjny w natywnym Cythonie,
     label={lst:cython-native-seq}]
@@ -110,34 +112,25 @@ cdef extern from *:
     """
     static double _run(int points) {
         int circle_points = 0;
-
         for (int i = 0; i < points; ++i) {
             double x = (double) rand()
                     / RAND_MAX;
             double y = (double) rand()
                     / RAND_MAX;
-
             if ((x - 1) * (x - 1) +
                 (y - 1) * (y - 1) < 1) {
                 ++circle_points;
             }
         }
-
         return 4.d * circle_points / points;
-    }
-
-    static void _srand(void) {
-        srand(time(NULL));
     }
     """
     double _run(int points)
-    void _srand()
 
 def run(points):
     return _run(points)
-
-_srand()
 \end{lstlisting}
+\end{minipage}
 % @formatter:on
 
 %\subsection{Mnożenie wektorów}

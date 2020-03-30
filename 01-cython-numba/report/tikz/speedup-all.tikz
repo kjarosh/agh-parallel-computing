@@ -2,7 +2,7 @@
     \begin{axis}[
         xlabel=Liczba wątków,
         ylabel=Przyspieszenie,
-        legend pos=north west]
+        legend pos=south east]
         \addplot table[color=red, mark=x, x index=1, y index=2] {results/threads-mp_cython.dat};
         \addplot table[color=blue, mark=o, x index=1, y index=2] {results/threads-mp_native_cython.dat};
         \addplot table[color=red, mark=x, x index=1, y index=2] {results/threads-parallel_numba.dat};

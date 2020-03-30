@@ -1,7 +1,7 @@
 \begin{tikzpicture}[trim axis left]
     \begin{axis}[
         xlabel=Liczba wątków,
-        ylabel=Czas wykonania,
+        ylabel=Czas wykonania (s),
         legend pos=north east]
         \addplot table[color=red, mark=x, x index=1, y index=0] {results/threads-mp_python.dat};
 
