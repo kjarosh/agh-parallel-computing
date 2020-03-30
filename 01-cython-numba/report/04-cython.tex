@@ -61,17 +61,16 @@ liczb pseudolosowych.
 Na rysunku~\ref{fig:cython-threads} przedstawiony jest czas wykonania
 w zależności od liczby wątków.
 Testy zostały wykonane dla wystarczająco dużego rozmiaru problemu,
-który był równy \texttt{1\_000\_000} punktów.
+który był równy \texttt{250\_000\_000} punktów.
 Natywny Cython jest szybszy 18--21 krotnie.
 
 Na rysunku~\ref{fig:cython-speedup} widoczne jest również przyspieszenie
 obu wariantów kodu.
-W zależności od liczby wątków (1--8) przedstawiamy współczynnik
+W zależności od liczby wątków (1--16) przedstawiamy współczynnik
 przyspieszenia programu.
 Dla obu przypadków widać, że przyspieszenie rośnie niemalże liniowo.
-Dla wersji natywnej jest trochę mniejsze, lecz najpewniej wynika to z faktu,
-że czas wykonania części równoległej się drastycznie zmniejszył,
-przez co bardziej uwidocznił część sekwencyjną.
+Dla większej liczby wątków niż 8, widać nieliniowe zachowanie się czasu
+wykonania programu.
 
 Na listingu~\ref{lst:cython-seq} widoczny jest użyty kod w wariancie
 sekwencyjnym.

@@ -39,13 +39,14 @@ wątków.
 Możemy zaobserwować, że wraz ze zwiększaniem liczby wątków istotnie maleje czas
 wykonania programu.
 Program skaluje się bardzo dobrze dla 2, 3 i 4 wątków natomiast
-dokładanie kolejnych tj. 5, 6, 7, 8 nie daje już aż tak dobrego rezultatu.
+dokładanie kolejnych tj.\ 5, 6, 7, 8 nie daje już aż tak dobrego rezultatu.
 Widać to dokładnie
 na wykresie ~\ref{fig:numba-speedup} gdzie począwszy od 5 wątków realne przyspieszenie
 programu zdecydowanie odbiega od teoretycznego.
 
 Ostatni wykres ~\ref{fig:numba-parallel-sizes}) przedstawia czas równoległego wykonania
-programu w Numbie w zależności od rozmiaru problemu. Wyniki są zgodne z oczekiwanymi.
+programu w Numbie w zależności od rozmiaru problemu.
+Wyniki są zgodne z oczekiwanymi.
 6-krotne zwiększenie rozmiaru problemu wydłuża czas działania programu prawie 6 razy.
 
 Listing ~\ref{lst:numba-example} przedstawia przykładowy kod napisany

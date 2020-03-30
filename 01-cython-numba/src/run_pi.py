@@ -23,7 +23,7 @@ import _cython.pi.seq_native
 import _cython.pi.mp
 import _cython.pi.mp_native
 
-iterations = 100
+iterations = 1
 size = 1000
 pool = Pool(processes=8)
 
@@ -39,11 +39,13 @@ testing_data = [
         'name': 'Python',
         'type': 'Seq',
         'exec': lambda: _python.pi.seq.run(size),
+        'filter': lambda s: s <= 60000000,
     },
     {
         'name': 'Python',
         'type': 'MP',
         'exec': lambda: _python.pi.mp.run(size, pool),
+        'filter': lambda s: s <= 200000000,
     },
 
     {
@@ -80,6 +82,7 @@ testing_data = [
         'name': 'Cython',
         'type': 'Seq',
         'exec': lambda: _cython.pi.seq.run(size),
+        'filter': lambda s: s <= 60000000,
     },
     {
         'name': 'Cython',
@@ -90,6 +93,7 @@ testing_data = [
         'name': 'Cython',
         'type': 'MP',
         'exec': lambda: _cython.pi.mp.run(size, pool),
+        'filter': lambda s: s <= 200000000,
     },
     {
         'name': 'Cython',
@@ -148,9 +152,7 @@ def test_sizes(sizes, plot):
 
 def test_threads(threads, plot):
     global size
-    size = 1_000_000
-    global iterations
-    iterations = 50
+    size = 250_000_000
     file_name = "result-threads.dat"
 
     if plot:
@@ -167,7 +169,7 @@ def test_threads(threads, plot):
         results['kind'] = results['type'].astype(str) + ' ' + results['name']
 
         # speedup
-        seq_times = results[results['threads'] == 1]
+        seq_times = results[results['threads'] == 1].copy()
         seq_times['base_time'] = seq_times['time']
         seq_times = seq_times.filter(['kind', 'base_time'])
         results = results.merge(seq_times, on='kind')
@@ -190,9 +192,9 @@ def plot_results(results, index, title, xlabel, ylabel):
 
 def main():
     plot = len(sys.argv) >= 2 and sys.argv[1] == 'plot'
-    sizes = [100000, 200000, 300000, 400000, 500000, 600000]
+    sizes = [10_000_000 * i for i in range(1, 30)]
     test_sizes(sizes, plot)
-    threads = [1, 2, 3, 4, 5, 6, 7, 8]
+    threads = [i for i in range(1, 17)]
     test_threads(threads, plot)
 
 
