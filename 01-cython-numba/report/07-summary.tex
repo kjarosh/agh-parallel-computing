@@ -1,3 +1,35 @@
+\begin{figure*}
+    \centering
+    \input{tikz/sizes-seq.tikz}
+    \caption{Czas wykonania algorytmu w zależności od rozmiaru problemu}
+    \label{fig:all-sizes-seq}
+\end{figure*}
+
+
+\begin{figure*}
+    \centering
+    \input{tikz/sizes-parallel.tikz}
+    \caption{Czas wykonania algorytmu w zależności od rozmiaru problemu}
+    \label{fig:all-sizes-parallel}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \begin{minipage}[b]{.45\textwidth}
+        \centering
+        \input{tikz/threads-all.tikz}
+        \caption{Czas wykonania algorytmu w zależności od liczby wątków}
+        \label{fig:all-threads}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{.45\textwidth}
+        \centering
+        \input{tikz/speedup-all.tikz}
+        \caption{Przyspieszenie liczenia liczby $\pi$}
+        \label{fig:all-speedup}
+    \end{minipage}
+\end{figure*}
+
 \section{Podsumowanie}
 
 Na wykresie~\ref{fig:all-sizes-seq} widać porównanie
@@ -18,21 +50,6 @@ Wykres~\ref{fig:all-sizes-parallel} przedstawia porównanie wariantów równoleg
 Wyniki są niemalże identyczne z wariantami sekwencyjnymi.
 Sytuacja z generatorami liczb tutaj jest również widoczna.
 
-\begin{figure*}
-    \centering
-    \input{tikz/sizes-seq.tikz}
-    \caption{Czas wykonania algorytmu w zależności od rozmiaru problemu}
-    \label{fig:all-sizes-seq}
-\end{figure*}
-
-
-\begin{figure*}
-    \centering
-    \input{tikz/sizes-parallel.tikz}
-    \caption{Czas wykonania algorytmu w zależności od rozmiaru problemu}
-    \label{fig:all-sizes-parallel}
-\end{figure*}
-
 Wykres~\ref{fig:all-threads} przedstawia czas wykonania wystarczająco dużego problemu
 w zależności od liczby wątków,
 przekłada się on na wykres przyspieszenia~\ref{fig:all-speedup}.
@@ -48,20 +65,3 @@ każda większa liczba nie daje wystarczająco dobrego przyspieszenia.
 Ciężko spekulować dlaczego tak się wydarzyło, ze względu na to,
 że cały kod zarządzający wątkami jest zaimplementowany w Numbie
 i z naszego punktu widzenia jest to czarna skrzynka.
-
-\begin{figure*}
-    \centering
-    \begin{minipage}[b]{.45\textwidth}
-        \centering
-        \input{tikz/threads-all.tikz}
-        \caption{Czas wykonania algorytmu w zależności od liczby wątków}
-        \label{fig:all-threads}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{.45\textwidth}
-        \centering
-        \input{tikz/speedup-all.tikz}
-        \caption{Przyspieszenie liczenia liczby $\pi$}
-        \label{fig:all-speedup}
-    \end{minipage}
-\end{figure*}

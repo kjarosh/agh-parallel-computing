@@ -1,8 +1,8 @@
 \begin{tikzpicture}[trim axis left]
     \begin{axis}[
         xlabel=Rozmiar problemu,
-        ylabel=Czas wykonania,
-        legend pos=outer north east]
+        ylabel=Czas wykonania (s),
+        legend pos=south east]
         \addplot table[mark=x, x index=1, y index=0] {results/sizes-seq_numba.dat};
         \addplot table[mark=o, x index=1, y index=0] {results/sizes-seq_fastmath_numba.dat};
 
