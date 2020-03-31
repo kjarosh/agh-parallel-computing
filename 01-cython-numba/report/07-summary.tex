@@ -30,6 +30,7 @@
     \end{minipage}
 \end{figure*}
 
+
 \section{Podsumowanie}
 
 Na wykresie~\ref{fig:all-sizes-seq} widać porównanie
@@ -37,31 +38,75 @@ wszystkich wariantów sekwencyjnych.
 Czysty Python oraz Cython są najmniej wydajne,
 prawie 60 razy mniej wydajne niż wariant Numby.
 Niemniej jednak Cython lekko zwiększa wydajność czystego Pythona.
-Nieoczywistym jest jednak porównanie natywnego Cythona z Numbą,
+Nieoczywistym jest jednak porównanie natywnego Cythona z~Numbą,
 która wydaje się szybsza.
-Okazuje się, że problem leży w generowaniu liczb losowych ---
+Okazuje się, że problem leży w~generowaniu liczb losowych ---
 Numba ma dużo szybszy generator niż ten ze standardowej biblioteki
 języka C\@.
 Gdy porównywaliśmy czasy wykonania na własnym generatorze liczb pseudolosowych
 ta różnica czasów wykonania się zacierała.
-Natywny Cython był wtedy szybszy od Numby.
+Natywny Cython był wtedy niewiele szybszy od Numby.
 
 Wykres~\ref{fig:all-sizes-parallel} przedstawia porównanie wariantów równoległych.
-Wyniki są niemalże identyczne z wariantami sekwencyjnymi.
-Sytuacja z generatorami liczb tutaj jest również widoczna.
+Wykresy mają niemalże identyczne przebiegi jak te z~wariantu sekwencyjnego,
+z~tą różnicą, że algorytmy równoległe są o~ponad pół rzędu wielkości szybsze
+od swoich sekwencyjnych odpowiedników.
+Np. czas wykonania programu
+dla problemu o~rozmiarze 290000000 wersją sekwencyjną Numby wynosi 3.06s,
+a~wersją równoległą 0.51s.
+Powyżej opisana sytuacja z~generatorami liczb również jest tutaj widoczna.
 
-Wykres~\ref{fig:all-threads} przedstawia czas wykonania wystarczająco dużego problemu
-w zależności od liczby wątków,
+Wykres~\ref{fig:all-threads} przedstawia czas wykonania problemu o rozmiarze
+250000000 w zależności od liczby wątków,
 przekłada się on na wykres przyspieszenia~\ref{fig:all-speedup}.
 Wersje: czysty Python oraz Cython skalują się najlepiej ze wszystkich,
 jednak należy wziąć pod uwagę, że czas wykonania w nich był najdłuższy.
-Skalowalność więc w innych przypadkach mogła się pogorszyć ze względu na to,
-że kod równoległy się wykonywał szybciej, a co za tym idzie większa
-część kodu sekwencyjnego wpływała na przyspieszenie.
 
 Numba skalowała się relatywnie najgorzej.
-Cztery wątki okazują się najoptymalniejszym wyborem,
+Pięć wątków okazuje się najoptymalniejszym wyborem,
 każda większa liczba nie daje wystarczająco dobrego przyspieszenia.
 Ciężko spekulować dlaczego tak się wydarzyło, ze względu na to,
-że cały kod zarządzający wątkami jest zaimplementowany w Numbie
-i z naszego punktu widzenia jest to czarna skrzynka.
+że cały kod zarządzający wątkami jest zaimplementowany w~Numbie
+i~z~naszego punktu widzenia jest to czarna skrzynka.
+
+Pod uwagę należy również wziąć parametry środowiska testowego.
+Procesor, na którym wykonywane były testy posiada 8~fizycznych rdzeni.
+Liczba 16 wątków na wykresach bierze się z opcji hyper-threading'u.
+Z~tego wynika, że przynajmniej do 8 wątków programy powinny skalować się
+niemalże zgodnie z~przewidywaniami teoretycznymi, a~ewentualne braki
+dodatkowej wydajności powinny pojawić się dopiero od liczby 9~wątków.
+
+Podsumowując, uważamy że Python ma rację bytu w HPC\@.
+Istnieje w nim wiele możliwości na zwiększenie wydajności obliczeń,
+a sam język może zostać wykorzystany do wysokopoziomowego opisu obliczeń.
+
+Najlepiej do tego celu nadawałaby się Numba, gdyż wyróżniała się ona
+wysoką, niemalże natywną wydajnością kodu.
+Najlepsze wyniki uzyskał natomiast Cython Native,
+ale pisanie w~nim tak naprawdę jest równoznaczne z~pisaniem w~języku C,
+co w~żaden sposób nie wykorzystuje funkcji Pythona.
+
+Kompilator Cython w~porównaniu do Numby i~interpretera Pythona daje zbyt
+małe przyspieszenie, dlatego bardzo słabo nadaje się do wykonywania
+krytycznych czasowo obliczeń.
+Nadaje się jednak idealnie do integracji Pythona z językiem C\@.
+Można go użyć na przykład aby wykorzystać w~Pythonie biblioteki napisane w~C,
+lub innym języku, którego można zintegrować z~C~/~C++\@.
+
+
+\section{Przyszłe prace}
+
+Powyżej opisane wyniki niosą za sobą wiele kwestii wartych poruszenia.
+Na pewno warto zgłębić problem skalowalności Numby na więcej niż 4--5
+rdzeni.
+Bardzo daleko jej było do perfekcyjnej skalowalności,
+co może oznaczać że w~kodzie Numby może leżeć błąd,
+ewentualnie objawia się on dla specyficznej architektury i~narzędzi.
+
+Kolejną kwestią był nagły ujemny skok w~przyspieszeniu dla
+liczby wątków równej 9 dla multiprocessingu.
+Jest on ciekawą obserwacją, ponieważ w~aplikacjach wielowątkowych
+napisanych w~innych językach niż Python on nie występuje ---
+powyżej 8 wątków wydajność nadal rośnie.
+Najpewniej jest on spowodowany specyfiką biblioteki multiprocessing
+i~faktu, że wykorzystuje ona procesy zamiast wątków.
