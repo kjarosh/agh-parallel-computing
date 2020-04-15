@@ -2,3 +2,5 @@
 venv/
 __pycache__
 *.dat
+.vscode/
+02-pgas/upcxxtest/out/
