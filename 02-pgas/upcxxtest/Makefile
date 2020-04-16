@@ -1,20 +1,26 @@
-PROC=4
-OUT=out
+PROC := 4
+OUT := out
+SRC := src
 
-all: rbsolver rpcexample
+all: rbsolver rpcexample run
+rbsolver: $(OUT)/rbsolver.out
+rpcexample: $(OUT)/rpcexample.out
 
-rbsolver: rbsolver.cpp
-	mkdir -p $(OUT)
-	upcxx -g $< -o $(OUT)/$@.out
-	upcxx-run -n $(PROC) $(OUT)/$@.out
+$(OUT)/%.out: $(SRC)/%.cpp
+	@mkdir -p $(OUT)
+	upcxx -g $< -o $@
 
+run: run-rbsolver run-rpcexample
 
-rpcexample: rpcexample.cpp
-	mkdir -p $(OUT)
-	upcxx -g $< -o $(OUT)/$@.out
-	upcxx-run -n $(PROC) $(OUT)/$@.out
+run-rbsolver:
+	@echo ==== Running rbresolver
+	upcxx-run -n $(PROC) $(OUT)/rbsolver.out
+
+run-rpcexample:
+	@echo ==== Running rpcexample
+	upcxx-run -n $(PROC) $(OUT)/rpcexample.out
 
 clean:
 	rm -rf $(OUT)
 
-.PHONY: all rbsolver rpcexample
+.PHONY: all clean run run-rbsolver run-rpcexample rbsolver rpcexample
