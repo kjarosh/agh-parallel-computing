@@ -1,11 +1,10 @@
 \documentclass[twocolumn]{article}
-\usepackage[utf8]{inputenc}
 \usepackage[polish]{babel}
 \usepackage[backend=biber,style=numeric]{biblatex}
-\usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \usepackage{listings}
+\usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{pgfplots}
 
@@ -313,7 +312,7 @@ Z jednej strony zyskujemy dzięki temu na wydajności
 ale z drugiej jesteśmy zmuszeni ręcznie obsługiwać pewne mechanizmy
 (w tym kontekście szczególnie ważne jest pojęcie \textit{progressu} oraz
 umiejętne korzystanie z funkcji \texttt{upcxx::progress()}).
-Podąrzając tym
+Podążając tym
 tropem w UPC++ mamy tylko i wyłącznie tzw.\ \textit{explicit shared memory access}.
 Twórcom biblioteki zależało na świadomym odwoływaniu się do danych, które należą do
 innego procesu, co niesie ze sobą duży narzut wydajnościowy.
@@ -389,7 +388,10 @@ stan z czasem, na przykład obliczanie elementu jako średniej jego sąsiadów.
 
 \end{description}
 
-\include{matrix_det}
+\input{stencil.tex}
+\input{matrix_det}
+
+% \section{Podsumowanie}
 
 \printbibliography
 \end{document}

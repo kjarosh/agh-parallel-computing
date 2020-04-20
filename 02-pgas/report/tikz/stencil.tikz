@@ -1,0 +1,11 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        xlabel=Liczba procesów/locali,
+        ylabel=Czas wykonania (s),
+        width=\columnwidth,
+        legend style={at={(0.97,0.4)},anchor=east}]
+        \addplot table[x index=0, y index=2] {results/chapel-stencil.dat};
+        \addplot table[x index=0, y index=2] {results/upcxx-stencil.dat};
+        \legend{Chapel, UPC++}
+    \end{axis}
+\end{tikzpicture}

@@ -1,0 +1,8 @@
+FROM chapel/chapel-gasnet
+
+ENV CHPL_RT_NUM_THREADS_PER_LOCALE=1
+ENV CHPL_TARGET_CPU=native
+ENV CHPL_COMM=gasnet
+ENV CHPL_COMM_SUBSTRATE=smp
+
+RUN cd $CHPL_HOME && make -j 24

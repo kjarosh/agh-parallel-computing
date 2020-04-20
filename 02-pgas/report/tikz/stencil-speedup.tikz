@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        xlabel=Liczba procesów/locali,
+        ylabel=Przyspieszenie,
+        width=\columnwidth,
+        legend pos=north west]
+        \addplot table[x index=0, y index=3] {results/chapel-stencil.dat};
+        \addplot table[x index=0, y index=3] {results/upcxx-stencil.dat};
+
+        \addplot[domain=0:6, samples=2, color=gray, style=dashed]{x};
+
+        \legend{Chapel, UPC++}
+    \end{axis}
+\end{tikzpicture}
