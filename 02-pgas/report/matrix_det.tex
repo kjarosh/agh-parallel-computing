@@ -1,0 +1,111 @@
+\section{Wyznacznik macierzy (Michał Śledź)}
+\label{sec:matrix_det}
+
+\subsection{Środowisko testowe}
+
+\begin{description}
+    \item [procesor]: i5-9600K 6 rdzeni, 3,70-4,60 GHz, 9MB Cache
+    \item [pamięć]: 16 GB RAM, 3200 MHz, CL 16
+\end{description}
+Testy zostały wykonane na jednej maszynie lokalnej (opisanej powyżej) bez udziału
+sieci.
+Testy były uruchamiane wielokrotnie i dawały zbliżone do siebie wyniki.
+
+\subsection{UPC++}
+
+Na początku deklarujemy dwa distributed objecty, dzięki czemu
+każdy z procesów będzie miał te same zmienne lecz z innymi
+wartościami~\ref{lst:upcxx-dstobj-init}.
+
+\begin{lstlisting}[
+    caption=Inicjalizacja distributed objectów,
+    label={lst:upcxx-dstobj-init}]
+upcxx::dist_object<upcxx::global_ptr<double>>
+    u_g(upcxx::new_array<double>(N*N));
+upcxx::dist_object<upcxx::global_ptr<double>>
+    sum(upcxx::new_<double>(0));
+\end{lstlisting}
+
+Następnie proces o id równym 0 inicjalizuje tablicę, dla której
+mamy policzyć wyznacznik, a kolejne procesy kopiują
+jej zawartość~\ref{lst:upcxx-state-sync}.
+
+\begin{lstlisting}[
+    caption=Ustalenie stanu procesów,
+    label={lst:upcxx-state-sync}]
+if (upcxx::rank_me() == 0) {
+    init_matrix(&u_g);
+}
+upcxx::barrier();
+
+upcxx::global_ptr<double> u =
+    u_g.fetch(0).wait();
+double **matrix = allocate_matrix(N);
+for (int i = 0; i < N; i++) {
+    for (int j = 0; j < N; j++) {
+        int ptr = u + (i*N + j);
+        matrix[i][j]=upcxx::rget(ptr).wait();
+    }
+}
+\end{lstlisting}
+
+Kolejnym krokiem jest obliczenie przez każdy z procesów
+rozwinięcia Laplace'a, które oznaczone jest przez wywołanie metody run.
+Każdy z procesów liczy wspomniane rozwinięcie tylko dla wybranych kolumn, zgodnie
+ze wzorem:
+\begin{equation}
+    k = proc\_id + n*proc\_num
+\end{equation}
+Wywołujemy również funkcję \texttt{upcxx::barrier()} celem synchronizacji wszystkich
+procesów w tym miejscu~\ref{lst:upcxx-laplace}.
+
+\begin{lstlisting}[
+    caption=Liczenie rozwinięcia Laplace'a,
+    label={lst:upcxx-laplace}]
+    double *local_sum = sum->local();
+    *local_sum = run(matrix, N);
+    upcxx::barrier();
+\end{lstlisting}
+
+Na końcu proces o id równym zero odczytuje zmienne sum pozostałych
+procesów wyliczając w ten sposób ostateczną
+wartość wyznacznika~\ref{lst:upcxx-sum-results}.
+
+\begin{lstlisting}[
+    caption=Sumowanie wyniku,
+    label={lst:upcxx-sum-results}]
+if (upcxx::rank_me() == 0) {
+    int proc_n = upcxx::rank_n();
+    for (int i = 1; i < proc_n; i++) {
+        upcxx::global_ptr<double> u =
+            sum.fetch(i).wait()
+        *local_sum +=
+            upcxx::rget(u).wait();
+    }
+    cout << "\ndet: " << *local_sum;
+}
+\end{lstlisting}
+
+Wykres~\ref{fig:upcxx-matrixdet-time} przedstawia czas wykonania algorytmu w zależności
+od liczby wykorzystanych wątków.
+Rezultaty są spodziewane.
+Dla 5 wątków nie uzyskujemy żadnego przyspieszenia w stosunku
+do 4 co jest spowodowane tym, że rozmiar testowej macierzy nie jest podzielny przez 5.
+W rezultacie w ostatniej iteracji trzy wątki będą bezczynne ale wciąż trzeba poczekać na
+pozostałe dwa.
+Stąd brak przyspieszenia.
+Jest to dokładnie widoczne na wykresie~\ref{fig:upcxx-matrixdet-speedup}.
+
+\begin{figure}[h]
+    \centering
+    \input{tikz/upcxx-matrixdet.tikz}
+    \caption{Czas wykonania algorytmu w zależności od liczby wątków}
+    \label{fig:upcxx-matrixdet-time}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{tikz/upcxx-matrixdet-speedup.tikz}
+    \caption{Przyspieszenie algorytmu w zależności od liczby wątków}
+    \label{fig:upcxx-matrixdet-speedup}
+\end{figure}

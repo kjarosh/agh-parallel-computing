@@ -1,0 +1,10 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        xlabel=Liczba wątków,
+        ylabel=Czas wykonania (s),
+        legend pos=north east]
+        \addplot table[mark=*, x index=0, y index=1] {results/upcxx-matrixdet.dat};
+
+        \legend{Czas wykonania}
+    \end{axis}
+\end{tikzpicture}
