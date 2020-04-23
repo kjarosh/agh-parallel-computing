@@ -1,0 +1,85 @@
+\section{Mnożenie macierzy (Wiktor Sus)}
+    Zadanie polega na wykonaniu mnożenia macierzowego dla dwóch kwadratowych macierzy o zadanym rozmiarze.
+    W celu zachowania spójności rezultatów, macierze wejściowe są inicjalizowane z wykorzystaniem generatora liczb losowych z zadanym ziarnem.
+    
+    \subsection{Chapel}
+    Początkowo przeprowadzone zostały testy dla języka Chapel w konfiguracji wykorzystującej do komunikacji protokół udp.
+    Jest to typowa konfiguracja dla wielu jednostek obliczeniowych.
+    Obliczenia wykonywane były dla różnych rozmiarów problemów i ilości lokali (jednostek obliczeniowych) oraz były powtarzane dwa razy, wynikiem jest średnia obu czasów wykonania.
+    Prędko okazało się jednak, że zwiększenie ilości lokali dla problemów o rozmiarze większym niż 100 (od 200 do 1000) powodowało niemal wykładnicze zwiększenie czasu obliczeń, do stopnia w którym rozwiązanie problemu na jednym lokalu trwało ~1s, lecz na dwóch były to już 3min.
+    Z tego względu nie zostało wykonane pełne sprawozdanie dla różnych rozmiarów problemów.
+    
+    Kolejną metodą komunikacji jest smp (pamięć współdzielona).
+    W tym przypadku czas obliczeń znacząco zmalał, jednak ponownie zwiększenie liczby jednostek powodowało wzrost czasu wykonania.
+    W tabeli \ref{tab:matrixmulchapelcomm} zebrane zostały czasy wykonania w zależności od ilości lokali dla obu protokołów.
+    Widać w niej wyraźne przyspieszenie względem protokołu udp, jednak skalowanie się czasu obliczeń w zależności od ilości jednostek jest odwrotne niż oczekiwane.
+    
+    \begin{table}[]
+    \centering
+    \begin{tabular}{l|l|l}
+    \textbf{lokale} & \textbf{udp} & \textbf{smp} \\ \hline
+    1                & 1.09443s     & 1.0625s      \\ \hline
+    2                & 7.05248s     & 1.71718s     \\ \hline
+    3                & 10.0483s     & 1.91891s     \\ \hline
+    4                & 18.1122s     & 2.37569s     \\ \hline
+    5                & 16.0015s     & 2.15469s     \\ \hline
+    6                & 24.9213s     & 3.37137s     \\ \hline
+    7                & 21.0581s     & 4.246s       \\ \hline
+    8                & 26.7952s     & 5.12254s    
+    \end{tabular}
+    \caption{Porównanie obliczeń przy użyciu smp i udp w języku Chapel dla stałego ziarna oraz problemu o rozmiarze 100.}
+    \label{tab:matrixmulchapelcomm}
+    \end{table}
+    
+    Ze względu na krótszy czas wykonania obliczeń dla protokołu smp, przeprowadzono testy dla większych problemów, których wyniki zebrane zostały w tabeli \ref{tab:matrixmulchapelsmp}.
+    Ponownie zwiększenie ilości jednostek nie poprawiło czasu wykonania programu.
+    
+    \begin{table}[]
+    \centering
+    \begin{tabular}{l|l|l|l}
+    \textbf{lokale} & \textbf{100} & \textbf{200} & \textbf{500} \\ \hline
+    1               & 1.05837s     & 8.37514s     & 131.969s     \\ \hline
+    2               & 1.68456s     & 13.4264s     & 209.775s     \\ \hline
+    3               & 1.8937s      & 14.8816s     & 236.876s     \\ \hline
+    4               & 2.31936s     & 18.3884s     & 286.015s     \\ \hline
+    5               & 2.07s        & 19.0784s     & 259.122s     \\ \hline
+    6               & 2.61636s     & 22.35s       & 340.724s     \\ \hline
+    7               & 4.18683s     & 31.074s      & 378.78s      \\ \hline
+    8               & 5.02199s     & 30.7993s     & 529.622s    
+    \end{tabular}
+    \caption{Porównanie czasów obliczeń w Chapel przy użyciu smp dla różnych rozmiarów problemów.}
+    \label{tab:matrixmulchapelsmp}
+    \end{table}
+    
+    \subsection{UPC++}
+    Drugim testowanym rozwiązaniem była biblioteka UPC++.
+    Implementuje ona model PGAS dla języka C++ i pozwala na względnie łatwe programowanie wysokowydajnościowych obliczeń.
+    Testy przeprowadzone zostały dla tego samego problemu, w konfiguracji wykorzystującej od 1 do 8 procesów (jednostek obliczeniowych) korzystając z komunikacji poprzez pamięć współdzieloną (smp), bez powtarzania poszczególnych obliczeń.
+    Wyniki przedstawione zostały w tabeli \ref{tab:matrixmulupc}.
+    Możemy zauważyć przyspieszenie wykonania programu wraz z zwiększaniem ilości rdzeni, choć zwiększanie liczby rdzeni powyżej 3 daje coraz mniej zauważalne rezultaty.
+    Jest to najprawdopodobniej spowodowane początkowym kopiowaniem tablicy do pamięci każdego procesu, co wraz ze wzrostem ich ilości naturalnie wydłuża całkowity czas działania programu.
+    Rozmiar problemu ograniczony jest zasobami sprzętowymi komputera, w przypadku jednostki posiadającej 16GB pamięci operacyjnej obliczenie problemu o rozmiarze powyżej 2000 jest niewykonalne ze względu na brak wystarczającej ilości pamięci (trzy tablice kwadratowe o wymiarze ponad 2000, zawierające liczby podwójnej precyzji).
+    
+    \begin{table}[]
+    \centering
+    \begin{tabular}{l|l|l|l}
+    \textbf{lokale} & \textbf{1000} & \textbf{1500} & \textbf{2000} \\ \hline
+    1               & 1.84154s      & 6.64677s      & 29.9616s      \\
+    2               & 1.12929s      & 4.10752s      & 16.3781s      \\
+    3               & 0.888757s     & 2.89905s      & 11.3491s      \\
+    4               & 1.92441s      & 2.49104s      & 16.5829s      \\
+    5               & 1.79313s      & 6.37188s      & 15.3325s      \\
+    6               & 1.58884s      & 5.2607s       & 13.3494s      \\
+    7               & 1.42547s      & 4.01053s      & 10.5655s      \\
+    8               & 1.85513s      & 4.35211s      & 11.1056s     
+    \end{tabular}
+    \caption{Porównanie czasów obliczeń w UPC dla różnych rozmiarów problemów.}
+    \label{tab:matrixmulupc}
+    \end{table}
+    
+    \subsection{Podsumowanie}
+    Jak łatwo można zauważyć, implementacja zadania przy użyciu UPC++ jest o wiele wydajniejsza od wersji w języku Chapel.
+    Może to wynikać z niewystarczającej znajomości języka lub błędów programisty.
+    Przy wyborze narzędzia do obliczeń w modelu PGAS warto wziąć pod uwagę fakt, że UPC++ opiera się o język C++, dostarczając jedynie biblioteki, która jest dobrze udokumentowana oraz bez większych problemów spełnia swoje zadanie w satysfakcjonującym stopniu.
+    Nie można tego samego powiedzieć o języku Chapel, który opisany jest jedynie na oficjalnej stronie.
+    Brakuje dla niego wyczerpujących przykładów oraz informacji jak poprawnie w nim programować, tak by uzyskać oczekiwane skalowanie się rozwiązania.

@@ -1,0 +1,7 @@
+seed: 1234  size: 500  repetitions: 2  locales: 1
+24.6748s
+seed: 1234  size: 1000  repetitions: 2  locales: 1
+171.791s
+seed: 1234  size: 2000  repetitions: 2  locales: 1
+1266.88s
+seed: 1234  size: 500  repetitions: 2  locales: 2

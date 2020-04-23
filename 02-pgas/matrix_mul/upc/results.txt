@@ -1,0 +1,56 @@
+seed: 1234  size: 1000 locales: 1
+1.84154s
+seed: 1234  size: 1500 locales: 1
+6.64677s
+seed: 1234  size: 2000 locales: 1
+29.9616s
+
+seed: 1234  size: 1000 locales: 2
+1.12929s
+seed: 1234  size: 1500 locales: 2
+4.10752s
+seed: 1234  size: 2000 locales: 2
+16.3781s
+
+seed: 1234  size: 1000 locales: 3
+0.888757s
+seed: 1234  size: 1500 locales: 3
+2.89905s
+seed: 1234  size: 2000 locales: 3
+11.3491s
+
+seed: 1234  size: 1000 locales: 4
+1.92441s
+seed: 1234  size: 1500 locales: 4
+2.49104s
+seed: 1234  size: 2000 locales: 4
+16.5829s
+
+seed: 1234  size: 1000 locales: 5
+1.79313s
+seed: 1234  size: 1500 locales: 5
+6.37188s
+seed: 1234  size: 2000 locales: 5
+15.3325s
+
+seed: 1234  size: 1000 locales: 6
+1.58884s
+seed: 1234  size: 1500 locales: 6
+5.2607s
+seed: 1234  size: 2000 locales: 6
+13.3494s
+
+seed: 1234  size: 1000 locales: 7
+1.42547s
+seed: 1234  size: 1500 locales: 7
+4.01053s
+seed: 1234  size: 2000 locales: 7
+10.5655s
+
+seed: 1234  size: 1000 locales: 8
+1.85513s
+seed: 1234  size: 1500 locales: 8
+4.35211s
+seed: 1234  size: 2000 locales: 8
+11.1056s
+
