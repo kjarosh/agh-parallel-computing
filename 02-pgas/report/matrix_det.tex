@@ -109,3 +109,97 @@ Jest to dokładnie widoczne na wykresie~\ref{fig:upcxx-matrixdet-speedup}.
     \caption{Przyspieszenie algorytmu w zależności od liczby wątków}
     \label{fig:upcxx-matrixdet-speedup}
 \end{figure}
+
+\subsection{Chapel}
+
+Kod napisany w Chapelu jest analogiczny do tego napisanego w UPC++.
+Główną różnicą jest brak bezpośrednich odniesień do pamięci zdalnej tzn.
+nie wskazujemy explicite, że odwołujemy się do pamięci, która nie należy
+do obecnego procesu.
+Chapel robi to sam, za nas.
+
+Reszta kodu jest bardzo intuicyjna i podobna do swojego odpowiednika w C++ dlatego
+jego szczegółowa analiza nie ma sensu.
+Ciekawe i zastanawiające są natomiast wyniki.
+
+
+Wykres~\ref{fig:chapel-matrixdet-time} przedstawia czas wykonania programu w zależności
+od liczby wątków.
+Widzimy, że wykres jest daleki od oczekiwanego.
+Przede wszystkim dla 3 oraz 5 wątków nie uzyskujemy przyspieszenia względem ich poprzedników
+(wykres~\ref{fig:chapel-matrixdet-speedup}).
+Z kolei wyniki dla 6 wątków są gorsze niż dla 4 i porównywalne z tymi dla 2.
+Dodatkowo wyniki dla 4 wątków były bardzo zmienne.
+Na wykresie zostały zamieszczone te najlepsze, wynoszące nieco poniżej 60s natomiast
+zdarzały się również takie powyżej 100s.
+Ciężko powiedzieć co jest przyczyną takiego zachowania programu.
+Skalowanie między 1 i 2 wątkami jest prawie idealne natomiast kolejne wyniki
+pozostawiają wiele do życzenia.
+Nawet te dla 4 wątków ze względu na ich brak powtarzalności.
+
+Pierwszą ważną rzeczą jest sposób działania programu.
+Jest on identyczny z wersją C++.
+Na początku procesy kopiują do siebie wejściową tablicę.
+Dzięki temu (potwierdziły to również logi) jedyna komunikacja, która ma miejsce
+to ta na początku programu (podczas kopiowania tablicy i trwa koło 1s dla 6 procesów)
+oraz na końcu podczas sumowania wyników.
+Poza tym procesy nie potrzebują się miedzy sobą komunikować dlatego można wykluczyć
+narzut komunikacyjny jako przyczynę problemów z wydajnością.
+
+Kolejny problem pojawia się przy zajmowaniu wątków systemowych.
+Pomimo bezpośredniego wskazania, że jeden \texttt{locale} może wykorzystywać maksymalnie
+jeden wątek w rzeczywistości wykorzystuje zawsze 2 razy więcej.
+I tak uruchamiając program na 2 localach zajmujemy 4 rdzenie procesora, a
+na 3 localach zajmujemy 6 rdzeni.
+Pomimo tego, że na 4 localach również zajmujemy 6 rdzeni (ograniczenia sprzętowe)
+to wynik potrafi być mimo wszystko uzyskany sporo szybciej.
+
+W celu dokładniejszego zbadania problemu zmodyfikowałem przykład w taki sposób,
+że każdy z wątków tworzy własną tablicę i wypełnia ją własnymi liczbami.
+Nie dochodzi wtedy do kopiowania tablicy a co za tym idzie do komunikacji.
+Przykład ten miał za zadanie sprawdzić czy poprawią się jedynie wyniki czasowe bo
+z punktu widzenia użyteczności nie ma sensu - nie liczy żadnego wyznacznika.
+Alternatywnie można było zaimplementować obliczanie liczby PI ale ze względów czasowych
+łatwiej było zmodyfikować posiadany już kod.
+Nietety wyniki okazały się podobne do tych poprzednich co potwierdza, że to nie komunikacja
+jest problemem.
+
+Jeszcze jedną, ciekawą obserwacją jest czas wykonania poszczególnych wątków.
+Każdy wątek po wystartowaniu wypisuje odpowiednią informację na standardowe wyjście.
+Niestety przy uruchamianiu np. na 4, 5 czy 6 rdzeniach informacje nie pojawiały się w tym
+samym czasie.
+Wyglądało to tak, że pojawiały się logi od np. 4 rdzeni, potem rdzenie te wykonywały swoją
+pracę i zapisywały wyniki a dopiero na końcu startował ostatni rdzeń mimo, że zużycie
+procesora w monitorze systemowym wskazywało na wykorzystanie wszystkich
+5 rdzeni przez cały ten czas.
+
+\begin{figure}
+    \centering
+    \input{tikz/chapel-matrixdet.tikz}
+    \caption{Czas wykonania algorytmu w zależności od liczby wątków}
+    \label{fig:chapel-matrixdet-time}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \input{tikz/chapel-matrixdet-speedup.tikz}
+    \caption{Przyspieszenie algorytmu w zależności od liczby wątków}
+    \label{fig:chapel-matrixdet-speedup}
+\end{figure}
+
+\subsection{Podsumowanie}
+Podsumowując warto skupić się na dwóch aspektach.
+Pierwszym z nich jest prostota użytkowania.
+Chapel wydaje się być bardziej podobny do Pythona.
+UPC++ wymaga znajomości C++ co od razu sprawia, że jest trudniejszy do użycia.
+Można powiedzieć, że pod tym względem Chapel wypada trochę lepiej.
+Drugim aspektem jest wydajność i skalowalność.
+I tutaj zdecydowanie wygrywa UPC++.
+W moich badaniach Chapel okazał się nie tylko mało wydajnym językiem ale również
+nieskalowalnym.
+Być może jest to spowodowane złym wykorzystaniem Chapela.
+Przeglądając dokumentację można wysnuć bardzo małe podejrzenie, że mechanizmu
+\texttt{locale} powinno się używać dla różnych maszyn.
+Być może to jest powodem braku skalowalności.
+Nawet jeśli, to pozostaje jeszcze niska wydajność Chapela praktycznie
+4-krotnie mniejsza niż UPC++.
