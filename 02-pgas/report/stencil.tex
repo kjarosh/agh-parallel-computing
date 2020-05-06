@@ -1,0 +1,291 @@
+\section{Stencil (Kamil Jarosz)}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{|r|c|c|c|c|c|c|c|c|}
+        \hline
+        element & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8          \\ \hline
+        proces & \multicolumn{2}{c|}{P1} & \multicolumn{2}{c|}{P2} & \multicolumn{2}{c|}{P3} & \multicolumn{2}{c|}{P4} \\ \hline
+    \end{tabular}
+    \caption{Przykładowe rozlokowanie w pamięci tablicy stencila}
+    \label{fig:stencil-table}
+\end{table}
+
+Benchmark `stencil', zaproponowany w dokumentacji UPC++ polega
+na operowaniu na pewnej rozdystrybuowanej tablicy.
+Wykonywane są na niej operacje, które pozwalają ustalić końcowy jej stan.
+W tym konkretnym przypadku jest to liczenie średniej wartości elementów tablicy
+-- każdy element w pojedynczej iteracji staje się sumą sąsiadów
+(równanie~\ref{eq:stencil-iter}).
+
+\begin{gather}
+    u_i = \frac{u_{i-1}+u_{i+1}}{2}
+    \label{eq:stencil-iter}
+\end{gather}
+
+Rysunek~\ref{fig:stencil-table} reprezentuje przykładowe ulokowanie
+12-elementowej tablicy stencila w modelu pamięci PGAS\@.
+Każdy proces jest właścicielem części pamięci.
+W przypadku liczenia średniej wartości, procesy sąsiednie muszą
+komunikować się i wymieniać informacjami na temat elementów na krawędzi.
+Dodatkowo wprowadzone zostały dwie fazy liczenia średniej -- dla elementów
+parzystych i nieparzystych, po to aby race conditions nie występowały.
+
+\begin{gather}
+    \text{err} = \varepsilon \cdot E
+    \label{eq:stencil-conv}
+\end{gather}
+
+Co stałą liczbę iteracji sprawdzany jest warunek zbieżności.
+W tym przypadku jest to równanie~\ref{eq:stencil-conv},
+gdzie $\text{err}$ jest maksymalną różnicą między wartościami
+elementów a wartością oczekiwaną, $\varepsilon$ jest dobraną odpowiednio małą
+stałą, natomiast $E$ jest wartością oczekiwaną.
+
+Benchmark ten pozwala sprawdzić wiele przydatnych rzeczy na temat danego narzędzia:
+dostępność konstrukcji pozwalających w optymalny sposób zaimplementować go lub
+wydajność komunikacji i synchronizacji między procesami.
+Jest on zorientowany na używanie barier, oraz redukcję wyników
+z wielu procesów.
+
+\subsection{Przygotowanie środowiska}
+
+Chapel na pierwszy rzut oka jest bardzo łatwym w użyciu językiem.
+Banalnie można go skompilować i uruchomić.
+Chapel zadziała od razu, jednak nie od razu będzie wydajny.
+Wbrew pozorom bardzo trudno jest napisać program w Chapelu,
+który będzie szybko działać.
+
+Pierwszą rzeczą jaka może mieć wpływ na porównanie Chapela i UPC++
+jest komunikacja między procesami.
+Zarówno Chapel jak i UPC++ pod spodem używają biblioteki GASNet~\cite{gasnet},
+jednak ich domyślne ustawienia się diametralnie różnią.
+Domyślnie Chapel używa warstwy komunikacji opartej na UDP, gdy
+UPC++ używa pamięci współdzielonej.
+Stąd wynika wymóg ustawienia zmiennej środowiskowej
+\texttt{CHPL\_COMM\_SUBSTRATE=smp}.
+Chapel jednak nie jest domyślnie dystrybuowany ze skompilowaną warstwą \texttt{smp},
+stąd wymóg jego rekompilacji.
+
+Kolejnym istotnym faktem jest optymalizacja pod konkretną platformę.
+C++ tworzy kod zoptymalizowany pod daną platformę, gdy Chapel domyślnie
+kompiluje do kodu niezoptymalizowanego.
+Stąd wymóg ustawienia zmiennej \texttt{CHPL\_TARGET\_CPU=native}.
+Wymaga to również przekompilowania Chapela
+oraz pozwoli na użycie flagi kompilatora \texttt{--fast}.
+
+Kolejną ważną różnicą jest fakt braku wielowątkowości w obrębie
+jednego procesu w UPC++.
+Aby Chapel nie wykorzystywał więcej niż jednego wątku na danym locale,
+ustawiana jest zmienna procesowa \texttt{CHPL\_RT\_NUM\_THREADS\_PER\_LOCALE=1}.
+Dodatkowo w kodzie nie są wykorzystywane instrukcje korzystające z
+wielu wątków.
+
+Testy zostały przeprowadzone na komputerze wyposażonym w procesor
+Intel Core i5-9600K CPU @ 3.70GHz (6 rdzeni, 9MB cache, turbo)
+oraz pamięć operacyjną 16GB, 3200 MHz, CL16.
+Były przeprowadzone z wykorzystaniem systemu Linux Mint 19.3,
+oraz z wersją Chapela 1.22.0 (używaną na Dockerze).
+UPC++ było używane w wersji 2020.3.0 wraz
+z gcc 7.5.0.
+
+
+\subsection{Implementacja benchmarku}
+
+Ustalane są pewne stałe:
+\begin{itemize}
+    \item $n=1024\cdot16$ --- rozmiar stencila,
+    \item $M=100$ --- maksymalna wartość losowanych liczb,
+    \item $\varepsilon=0.1$ --- wspomniana stała z równania~\ref{eq:stencil-conv},
+    \item $E=M/2$ --- oczekiwana średnia.
+\end{itemize}
+
+Na postawie $n$ losowana jest tablica z rozkładem jednostajnym
+z przedziału $[0,M]$.
+Jest ona rozproszona na różnych procesach zgodnie ze schematem
+z rysuknu~\ref{fig:stencil-table}.
+
+Następnie wykonywane są iteracje, każda iteracja w zależności od fazy
+(parzyste iteracje są wykonywane w fazie 0, nieparzyste w fazie 1)
+aktualizuje parzyste (faza 0) lub nieparzyste (faza 1) elementy.
+
+Co 200 iteracji sprawdzana jest zbieżność.
+Każdy proces liczy maksymalną absolutną różnicę między elementami
+a wartością oczekiwaną, a następnie dane są zbierane z wszystkich procesów
+i finalny błąd $\text{err}$ jest liczony jako ich wartość maksymalna.
+Następnie aplikowany jest warunek zbieżności (równanie~\ref{eq:stencil-conv}).
+
+Stała 200 nie została wybrana przypadkowo --- UPC++ ma wbudowane
+algorytmy wykonujące redukcję na wielu procesach, które są bardzo
+zoptymalizowane.
+Chapel niestety nie ma takich konstrukcji, ani funkcji bibliotecznych
+co dla częstego sprawdzania warunku zbieżności
+powodowało, że czas wykonania rósł
+niemalże liniowo względem liczby procesów:
+dla dwóch procesów średnio wykonywał się dwa razy \textit{wolniej}
+niż dla jednego.
+Wynikało to z problemu bardzo częstej komunikacji między procesami.
+
+\subsection{Porównanie}
+
+Finalny kod w Chapelu był dużo bardziej czytelny
+oraz zwięzły niż w UPC++.
+Chapel pozwala na mapowanie domen, co spowodowało że
+rozproszenie tablicy na wiele procesów było opisane jedną
+instrukcją, a użycie rozproszonej tablicy było identyczne
+z użyciem zwykłej.
+Chapel automatycznie komunikuje się z innymi procesami gdy
+potrzebujemy dostępu do pamięci z innego procesu.
+Niewątpliwą zaletą jest łatwość użycia, jednak
+istotną wadą jest dużo potencjalnych pomyłek, które nie sprawią
+że program będzie działać niepoprawnie,
+a że będzie on bardzo niewydajny.
+Dlatego pomocny był moduł \texttt{CommDiagnostics}, który
+pozwalał na logowanie komunikacji między procesami.
+Dzięki temu można być pewnym, że przesyłane są tylko
+dane które powinny być przesyłane.
+
+W UPC++ rozłożenie pamięci między procesy jest częścią struktury kodu.
+Gdy stwierdzimy, że jednak chcemy inne rozlokowanie, w Chapelu jest to
+jedna linijka zmiany, natomiast w UPC++ oznacza to przepisanie sporego
+fragmentu kodu.
+Utrudnia to jednak pisanie niewydajnego kodu.
+Każda komunikacja między procesami musi być napisana explicite.
+W Chapelu wszystko dzieje się automatycznie.
+
+W przypadku obu narzędzi barier używa się bardzo podobnie.
+W UPC++ jest to funkcja \texttt{upcxx::barrier()},
+w Chapelu jest to funkcja \texttt{allLocalesBarrier.barrier()}.
+Bariery w UPC++ były dużo wydajniejsze niż w Chapelu.
+
+Kolejnym istotnym elementem są redukcje.
+W tym benchmarku często pojawia się sytuacja, gdy każdy proces
+dysponuje pewną wartością i należy ją zredukować do jednej, wspólnej.
+W UPC++ nie ma z tym problemu, gdyż funkcja \texttt{upcxx::reduce\_all}
+dokładnie do tego służy.
+Jest ona bardzo wydajna i każdemu procesowi zwraca zredukowany wynik.
+W Chapelu niestety nie istnieje taki mechanizm.
+Dysponuje on konstrukcją \texttt{reduce}, jednak nie pozwoli ona zredukować
+wartości z wszystkich procesów.
+Generalnie możliwe jest jej użycie w dwóch trybach:
+\begin{itemize}
+    \item na jednym procesie jest w stanie zredukować wartości
+    kolekcji, używając wielu wątków --- to niestety nie poprawia sytuacji,
+    gdyż na jednym procesie założyliśmy maksymalnie jeden wątek,
+    \item jako redukcja wykonania z pętli \texttt{coforall}
+    lub \texttt{forall} --- to rozwiązanie też nie jest optymalne, gdyż nie
+    da się go użyć z wewnątrz pętli, tylko po jej wykonaniu.
+\end{itemize}
+Finalnie zostało to zaimplementowane w taki sposób, że
+wybrany proces (zerowy) liczy maksymalną wartość z wartości podanych
+przez wszystkie procesy, a następnie zwraca informację czy warunek był
+prawdziwy.
+Informacja jest zwracana za pomocą zmiennych synchronicznych,
+czyli takich które udostępniają metody synchronizacji pomiędzy procesami.
+
+Podczas testowania bardzo wyraźnie można było zobaczyć róznicę
+w czasie uruchamniania programów.
+W UPC++ program był uruchamiany natychmiastowo, gdy
+w Chapelu na począku zawsze występowało bardzo zauważalne opóźnienie.
+Stąd był wymóg liczenia czasu wykonania w kodzie Chapela,
+w przeciwieństwie do UPC++, gdzie można było liczyć czas wykonania
+całego procesu.
+
+
+\section{Wyniki benchmarku}
+
+\begin{figure}
+    \centering
+    \input{tikz/stencil.tikz}
+    \caption{Wykres czasu wykonania w zależności od liczby procesów/locali}
+    \label{fig:stencil-times}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \input{tikz/stencil-speedup.tikz}
+    \caption{Wykres przyspieszenia w zależności od liczby procesów/locali}
+    \label{fig:stencil-speedup}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \input{tikz/stencil-seq.tikz}
+    \caption{Wykres czasu wykonania w zależności od rozmiaru problemu}
+    \label{fig:stencil-seq}
+\end{figure}
+
+Bardzo trudno było uzyskać wiarygodne wyniki benchmarku ze względu na
+często niewytłumaczalny niedeterminizm Chapela.
+Czasy wykonania były bardzo zróżnicowane pomiędzy różnymi środowiskami
+a nawet uruchomieniami programu.
+Bardzo często kod na wielu procesach wykonywał się tak samo długo jak na jednym.
+Z tego powodu wybrane zostało środowisko, na którym czasy wykonania były
+najbardziej stabilne.
+Czasy wykonania były liczone jako minimum z 5 prób.
+
+Z UPC++ nie było większych problemów.
+Czasy wykonania były za każdym razem niemalże identyczne
+i skalowały się dużo lepiej.
+
+Testy zależne od liczby procesów/locali zostały przeprowadzone na stałym
+rozmiarze problemu, który wynosił $1024 \cdot 45 \cdot 8$ (rozmiar tablicy stencila).
+Wykorzystany epsilon był równy $0.1$.
+
+Wykres~\ref{fig:stencil-times} przedstawia czas wykonania w zależności od liczby
+procesów/locali.
+UPC++ charakteryzowało się dużo niższym czasem wykonania programu niż
+Chapel.
+Był on 6 razy szybszy dla wariantu na jednym procesie/localu,
+i ponad 15 razy szybszy dla 5 procesów/locali.
+
+Rysunek~\ref{fig:stencil-speedup} przedstawia przyspieszenie w obliczeniach
+w zależności od liczby procesów/locali.
+W UPC++ przyspieszenie się zwiększa aż do 4 procesów.
+Dla 5 pozostaje na stałym poziomie, a dla 6 spada.
+W przypadku Chapela sytuacja jest katastrofalna.
+Dla więcej niż 2 locali przyspieszenie nie rośnie, lecz stale maleje.
+
+Na wykresie~\ref{fig:stencil-seq} przedstawiona jest zależność czasu
+wykonania od rozmiaru problemu.
+Rozmiar problemu podany jest jako współczynnik przed bazowym rozmiarem
+problemu używanym w powyższych testach.
+
+\subsection{Wnioski}
+
+Wyniki jednoznacznie pokazują, że Chapel skaluje się dużo gorzej i
+ogólny czas jego wykonania jest zauważalnie większy.
+
+Bardzo ciężko powiedzieć skąd wynikał tak duży rozrzut czasów wykonania
+programu w przypadku Chapela.
+Przyczyną może być fakt, że Chapel był uruchomiony na wielu
+locale'ach, ale na jednej maszynie.
+O ile UPC++ jest dostosowany do takiego sposobu uruchomienia,
+o tyle Chapel sugeruje aby jako jeden locale traktować jedną maszynę,
+co może sugerować że nie jest on zoptymalizowany pod taki układ.
+Chapel jest również językiem używanym głównie na maszynach Cray,
+więc zapewne to właśnie pod nie będzie on najbardziej dostosowany.
+
+Wpływ na czasy wykonania na pewno miał też sam problem.
+Chapelowi brakowało odpowiednich metod redukcji wartości z wielu locali.
+To z pewnością wpłynęło negatywnie na czas wykonania gdyż zwiększało
+intensywność komunikacji i czas oczekiwania na wyniki.
+
+\subsection{Przyszłe prace}
+
+Niestety w tym sprawozdaniu już zabrakło czasu,
+ale prostym i wartym przeprowadzenia eksperymentem jest
+użycie opcji \texttt{--llvm}.
+Jest ona eksperymentalną funckją kompilatora Chapela i pozwala na
+generację kodu do LLVM\@.
+Może to pozwolić na lepsze optymalizacje i drastycznie zmienić wyniki
+eksperymentu.
+
+Kolejnym pomysłem jest uruchomienie benchmarku używając innego
+sposobu komunikacji niż pamięć współdzielona (na przykład sieć)
+na wielu maszynach -- tak jak sugeruje dokumentacja.
+
+Ciekawą opcją byłoby również uruchomienie kodu na systemach Cray
+i porównaniu na tychże systemach wydajności programów.
+Taki test byłby trudniejszy
+z powodu braku dostępności takich systemów.

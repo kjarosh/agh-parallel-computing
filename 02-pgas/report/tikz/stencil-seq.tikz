@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+    \begin{loglogaxis}[
+        xlabel=Rozmiar problemu,
+        ylabel=Czas wykonania (s),
+        width=\columnwidth,
+        legend pos=north west]
+        \addplot table[x index=0, y index=1] {results/stencil-seq.dat};
+        \addplot table[x index=0, y index=2] {results/stencil-seq.dat};
+        \legend{Chapel, UPC++}
+
+        % \addplot[domain=0.2:6, samples=100, color=gray, style=dashed] {121.305 * x - 15.1874};
+        % \addplot[domain=0.2:6, samples=100, color=gray, style=dashed] {13.72 * x - 4.93};
+    \end{loglogaxis}
+\end{tikzpicture}

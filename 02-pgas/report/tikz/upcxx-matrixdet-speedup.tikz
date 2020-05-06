@@ -1,12 +1,10 @@
-\begin{tikzpicture}[trim axis left]
+\begin{tikzpicture}
     \begin{axis}[
         xlabel=Liczba wątków,
         ylabel=Przyspieszenie,
+        width=\columnwidth,
         legend pos=south east]
         \addplot table[mark=x, x index=0, y index=2] {results/upcxx-matrixdet.dat};
-
         \addplot[domain=0:9, samples=2, color=gray, style=dashed]{x};
-
-        \legend{{Przyspieszenie}}
     \end{axis}
 \end{tikzpicture}
