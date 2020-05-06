@@ -1,0 +1,96 @@
+seed: 1234  size: 100  repetitions: 2  locales: 1
+1.0625s
+
+seed: 1234  size: 100  repetitions: 2  locales: 2
+1.71718s
+
+seed: 1234  size: 100  repetitions: 2  locales: 3
+1.91891s
+
+seed: 1234  size: 100  repetitions: 2  locales: 4
+2.37569s
+
+seed: 1234  size: 100  repetitions: 2  locales: 5
+2.15469s
+
+seed: 1234  size: 100  repetitions: 2  locales: 6
+3.37137s
+
+seed: 1234  size: 100  repetitions: 2  locales: 7
+4.246s
+
+seed: 1234  size: 100  repetitions: 2  locales: 8
+5.12254s
+
+
+seed: 1234  size: 100  repetitions: 2  locales: 1
+1.05837s
+
+seed: 1234  size: 200  repetitions: 2  locales: 1
+8.37514s
+
+seed: 1234  size: 500  repetitions: 2  locales: 1
+131.969s
+
+seed: 1234  size: 100  repetitions: 2  locales: 2
+1.68456s
+
+seed: 1234  size: 200  repetitions: 2  locales: 2
+13.4264s
+
+seed: 1234  size: 500  repetitions: 2  locales: 2
+209.775s
+
+seed: 1234  size: 100  repetitions: 2  locales: 3
+1.8937s
+
+seed: 1234  size: 200  repetitions: 2  locales: 3
+14.8816s
+
+seed: 1234  size: 500  repetitions: 2  locales: 3
+236.876s
+
+seed: 1234  size: 100  repetitions: 2  locales: 4
+2.31936s
+
+seed: 1234  size: 200  repetitions: 2  locales: 4
+18.3884s
+
+seed: 1234  size: 500  repetitions: 2  locales: 4
+286.015s
+
+seed: 1234  size: 100  repetitions: 2  locales: 5
+2.07s
+
+seed: 1234  size: 200  repetitions: 2  locales: 5
+19.0784s
+
+seed: 1234  size: 500  repetitions: 2  locales: 5
+259.122s
+
+seed: 1234  size: 100  repetitions: 2  locales: 6
+2.61636s
+
+seed: 1234  size: 200  repetitions: 2  locales: 6
+22.35s
+
+seed: 1234  size: 500  repetitions: 2  locales: 6
+340.724s
+
+seed: 1234  size: 100  repetitions: 2  locales: 7
+4.18683s
+
+seed: 1234  size: 200  repetitions: 2  locales: 7
+31.074s
+
+seed: 1234  size: 500  repetitions: 2  locales: 7
+378.78s
+
+seed: 1234  size: 100  repetitions: 2  locales: 8
+5.02199s
+
+seed: 1234  size: 200  repetitions: 2  locales: 8
+30.7993s
+
+seed: 1234  size: 500  repetitions: 2  locales: 8
+529.622s
