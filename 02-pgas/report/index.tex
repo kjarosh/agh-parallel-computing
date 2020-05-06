@@ -21,6 +21,7 @@
 
 \title{Wybór języków programowania w modelu PGAS do porównania}
 \author{Kamil Jarosz \and Wiktor Sus \and Michał Śledź}
+\date{6 maja 2020}
 
 \begin{document}
 \maketitle
@@ -392,7 +393,23 @@ stan z czasem, na przykład obliczanie elementu jako średniej jego sąsiadów.
 \input{matrix_det}
 \input{matmul}
 
-% \section{Podsumowanie}
+\section{Ocena końcowa}
+
+W porównaniu narzędzi: Chapel i UPC++ jednogłośnie zadecydowaliśmy,
+że UPC++ jest lepszym wyborem.
+Głównym powodem była wydajność napisanych programów -- nie było
+problemów ze skalowalnością i szybkością działania.
+Mimo, że Chapel jest językiem bardziej przyjaznym i posiadającym
+konstrukcje do obliczeń równoległych, jego wydajność pozostawia wiele do
+życzenia -- często jest gorsza o rzędy wielkości względem UPC++.
+Bardzo trudno osiągnąć akceptowalną skalowalność programu.
+W przypadku wystąpienia problemów z Chapelem mamy do dyspozycji praktycznie
+tylko jego dokumentację, gdyż brakuje przykładowych algorytmów (które byłyby
+optymalnie napisane).
+UPC++ nie jest językiem, lecz biblioteką, co ułatwia pisanie w nim
+programów ze względu na bogactwo zasobów i popularność C++.
+Jego dokumentacja zawiera dostatecznie dużo przykładów, co pozwala
+na poprawne jego używanie mimo bardziej skomplikowanej składni.
 
 \printbibliography
 \end{document}
